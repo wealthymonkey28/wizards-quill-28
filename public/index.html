@@ -1,232 +1,658 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Wizard's Quill ✨</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<title>The Wizard's Quill — A Magical Reading & Writing Adventure</title>
+<meta name="description" content="Forge AI-powered stories, explore enchanted tales, hunt hidden words, and paint magical worlds. A free adventure for young readers and storytellers.">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ──────────────────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --midnight:#06091a;--deep:#0d1135;--navy:#121845;
+  --gold:#f5c842;--gold2:#e8a020;
+  --cream:#fef9ec;--silver:#c8d0e8;
+  --rose:#e85d8a;--teal:#2ed8c3;--violet:#4a3f8f;
+}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--midnight);
+  font-family:'Nunito',sans-serif;
+  color:var(--cream);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── STARFIELD ─────────────────────────────────────────── */
+#stars{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:0;overflow:hidden;
+}
+.star{
+  position:absolute;background:white;border-radius:50%;
+  animation:twinkle var(--d,3s) var(--delay,0s) infinite ease-in-out;
+}
+@keyframes twinkle{
+  0%,100%{opacity:var(--min-op,.1);transform:scale(1);}
+  50%{opacity:var(--max-op,.9);transform:scale(1.4);}
+}
+
+/* ── PARTICLES ─────────────────────────────────────────── */
+.particle{
+  position:fixed;pointer-events:none;z-index:9999;font-size:1.2rem;
+  animation:floatUp 1.5s ease-out forwards;
+}
+@keyframes floatUp{
+  0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg);}
+  100%{opacity:0;transform:translateY(-120px) scale(0.3) rotate(360deg);}
+}
+
+/* ── LAYOUT ────────────────────────────────────────────── */
+.site{position:relative;z-index:1;}
+
+/* ── NAV BAR ───────────────────────────────────────────── */
+.topnav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.2rem 2rem;
+  border-bottom:1px solid rgba(245,200,66,0.1);
+  backdrop-filter:blur(12px);
+  position:sticky;top:0;z-index:100;
+  background:rgba(6,9,26,0.75);
+}
+.topnav-logo{
+  display:flex;align-items:center;gap:0.6rem;
+  font-family:'Cinzel Decorative',serif;
+  font-size:1rem;font-weight:700;
+  color:var(--gold);
+  text-decoration:none;
+  letter-spacing:0.02em;
+}
+.topnav-logo span{font-size:1.4rem;}
+.topnav-cta{
+  font-family:'Cinzel',serif;
+  font-size:0.8rem;font-weight:700;
+  letter-spacing:0.1em;
+  padding:0.55rem 1.4rem;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--midnight);
+  border-radius:50px;
+  text-decoration:none;
+  transition:all 0.25s;
+  box-shadow:0 4px 20px rgba(245,200,66,0.3);
+}
+.topnav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(245,200,66,0.5);filter:brightness(1.1);}
+
+/* ── HERO ──────────────────────────────────────────────── */
+.hero{
+  text-align:center;
+  padding:6rem 1.5rem 4rem;
+  position:relative;
+}
+.hero-glow{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);
+  width:700px;height:500px;
+  background:radial-gradient(ellipse,rgba(245,200,66,0.12) 0%,transparent 65%);
+  pointer-events:none;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.2em;
+  color:var(--gold);
+  border:1px solid rgba(245,200,66,0.3);
+  border-radius:50px;padding:0.4rem 1rem;
+  margin-bottom:2rem;
+  background:rgba(245,200,66,0.06);
+}
+.quill-float{
+  font-size:4rem;display:block;margin-bottom:1.2rem;
+  animation:float 4s ease-in-out infinite;
+}
+@keyframes float{
+  0%,100%{transform:translateY(0) rotate(-5deg);}
+  50%{transform:translateY(-14px) rotate(5deg);}
+}
+.hero h1{
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(2.2rem,6vw,4.2rem);
+  font-weight:900;
+  background:linear-gradient(135deg,#f5c842 0%,#fff8e1 40%,#f5c842 70%,#e8a020 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  letter-spacing:0.03em;
+  line-height:1.15;
+  filter:drop-shadow(0 0 30px rgba(245,200,66,0.35));
+  margin-bottom:1.2rem;
+}
+.hero-sub{
+  font-size:clamp(1rem,2.5vw,1.25rem);
+  color:var(--silver);
+  max-width:560px;
+  margin:0 auto 2.5rem;
+  line-height:1.7;
+  opacity:0.9;
+}
+.hero-actions{
+  display:flex;align-items:center;justify-content:center;
+  gap:1rem;flex-wrap:wrap;
+}
+.btn-hero{
+  font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;
+  letter-spacing:0.08em;
+  padding:0.95rem 2.4rem;
+  border-radius:50px;border:none;cursor:pointer;
+  text-decoration:none;
+  transition:all 0.25s;
+  display:inline-flex;align-items:center;gap:0.6rem;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--midnight);
+  box-shadow:0 6px 30px rgba(245,200,66,0.4);
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(245,200,66,0.55);filter:brightness(1.08);}
+.btn-secondary{
+  background:rgba(255,255,255,0.05);
+  color:var(--cream);
+  border:1.5px solid rgba(255,255,255,0.15);
+}
+.btn-secondary:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.3);transform:translateY(-3px);}
+
+/* ── PREVIEW STRIP ─────────────────────────────────────── */
+.preview-strip{
+  display:flex;justify-content:center;gap:0.75rem;
+  flex-wrap:wrap;
+  padding:0 1.5rem 1rem;
+  max-width:700px;margin:0 auto;
+}
+.preview-chip{
+  font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.08em;
+  padding:0.4rem 1rem;border-radius:50px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(245,200,66,0.15);
+  color:var(--silver);
+  display:flex;align-items:center;gap:0.4rem;
+}
+
+/* ── SECTION WRAPPER ───────────────────────────────────── */
+section{padding:5rem 1.5rem;}
+.section-inner{max-width:1000px;margin:0 auto;}
+.section-tag{
+  font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.25em;
+  color:var(--gold);text-transform:uppercase;
+  margin-bottom:0.75rem;opacity:0.85;
+}
+.section-heading{
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(1.6rem,4vw,2.4rem);
+  color:var(--cream);
+  margin-bottom:1rem;
+  line-height:1.2;
+}
+.section-desc{
+  font-size:1.05rem;color:var(--silver);
+  max-width:580px;line-height:1.75;opacity:0.85;
+}
+
+/* ── DIVIDER ───────────────────────────────────────────── */
+.divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(245,200,66,0.2),transparent);
+  max-width:900px;margin:0 auto;
+}
+
+/* ── FEATURES ──────────────────────────────────────────── */
+#features{background:rgba(13,17,53,0.4);}
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:1.25rem;
+  margin-top:3rem;
+}
+@media(max-width:640px){.features-grid{grid-template-columns:1fr;}}
+.feature-card{
+  background:linear-gradient(135deg,rgba(30,42,110,0.45),rgba(13,17,53,0.65));
+  border:1px solid rgba(245,200,66,0.13);
+  border-radius:20px;
+  padding:2rem;
+  transition:all 0.3s;
+  position:relative;overflow:hidden;
+}
+.feature-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at top left,rgba(245,200,66,0.06),transparent 60%);
+  opacity:0;transition:opacity 0.3s;
+}
+.feature-card:hover{border-color:rgba(245,200,66,0.3);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.4);}
+.feature-card:hover::before{opacity:1;}
+.feat-icon{font-size:2.4rem;margin-bottom:1rem;display:block;}
+.feat-title{
+  font-family:'Cinzel',serif;font-size:1rem;font-weight:700;
+  letter-spacing:0.06em;color:var(--gold);
+  margin-bottom:0.5rem;
+}
+.feat-desc{font-size:0.92rem;color:var(--silver);line-height:1.65;opacity:0.85;}
+.feat-tags{
+  display:flex;flex-wrap:wrap;gap:0.4rem;
+  margin-top:1.2rem;
+}
+.feat-tag{
+  font-size:0.7rem;padding:0.2rem 0.65rem;border-radius:50px;
+  font-family:'Cinzel',serif;letter-spacing:0.06em;
+}
+.tag-gold{background:rgba(245,200,66,0.15);color:var(--gold);border:1px solid rgba(245,200,66,0.25);}
+.tag-teal{background:rgba(46,216,195,0.15);color:var(--teal);border:1px solid rgba(46,216,195,0.25);}
+.tag-rose{background:rgba(232,93,138,0.15);color:var(--rose);border:1px solid rgba(232,93,138,0.25);}
+.tag-violet{background:rgba(122,94,167,0.25);color:#c4b5fd;border:1px solid rgba(122,94,167,0.3);}
+
+/* ── HOW IT WORKS ──────────────────────────────────────── */
+.steps{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:2rem;margin-top:3rem;
+}
+@media(max-width:640px){.steps{grid-template-columns:1fr;gap:1.5rem;}}
+.step{text-align:center;padding:1.5rem;}
+.step-num{
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(245,200,66,0.25),rgba(232,160,32,0.15));
+  border:1.5px solid rgba(245,200,66,0.35);
+  font-family:'Cinzel Decorative',serif;font-size:1.2rem;
+  color:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 1.2rem;
+}
+.step-icon{font-size:2rem;display:block;margin-bottom:0.8rem;}
+.step-title{
+  font-family:'Cinzel',serif;font-size:0.9rem;letter-spacing:0.06em;
+  color:var(--cream);margin-bottom:0.5rem;
+}
+.step-desc{font-size:0.87rem;color:var(--silver);line-height:1.6;opacity:0.8;}
+.step-connector{
+  display:none;
+}
+@media(min-width:641px){
+  .steps{position:relative;}
+  .step-connector{
+    display:block;position:absolute;
+    top:3.2rem;width:calc(33.33% - 60px);
+    height:1px;
+    background:linear-gradient(90deg,rgba(245,200,66,0.3),rgba(245,200,66,0.05));
+  }
+  .step-connector:nth-of-type(1){left:calc(33.33% + 10px);}
+  .step-connector:nth-of-type(2){left:calc(66.66% + 10px);}
+}
+
+/* ── STORY SHOWCASE ────────────────────────────────────── */
+#stories{background:rgba(13,17,53,0.3);}
+.story-showcase{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1rem;margin-top:3rem;
+}
+@media(max-width:768px){.story-showcase{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.story-showcase{grid-template-columns:1fr;}}
+.showcase-card{
+  background:rgba(30,42,110,0.3);
+  border:1px solid rgba(245,200,66,0.1);
+  border-radius:16px;padding:1.4rem;
+  transition:all 0.25s;cursor:default;
+}
+.showcase-card:hover{border-color:rgba(245,200,66,0.3);background:rgba(30,42,110,0.5);transform:translateY(-3px);}
+.sc-icon{font-size:2rem;margin-bottom:0.7rem;display:block;}
+.sc-title{
+  font-family:'Cinzel',serif;font-size:0.88rem;
+  color:var(--cream);margin-bottom:0.35rem;line-height:1.3;
+}
+.sc-desc{font-size:0.78rem;color:var(--silver);opacity:0.75;line-height:1.5;}
+.sc-diff{
+  display:inline-block;margin-top:0.75rem;
+  font-size:0.67rem;font-family:'Cinzel',serif;letter-spacing:0.06em;
+  padding:0.18rem 0.6rem;border-radius:50px;font-weight:700;
+}
+.diff-easy{background:rgba(46,216,195,0.18);color:var(--teal);border:1px solid rgba(46,216,195,0.3);}
+.diff-medium{background:rgba(245,200,66,0.18);color:var(--gold);border:1px solid rgba(245,200,66,0.3);}
+.diff-hard{background:rgba(232,93,138,0.18);color:var(--rose);border:1px solid rgba(232,93,138,0.3);}
+
+/* ── STATS BAR ─────────────────────────────────────────── */
+.stats-bar{
+  display:flex;align-items:center;justify-content:center;
+  gap:3rem;flex-wrap:wrap;
+  padding:3rem 1.5rem;
+  border-top:1px solid rgba(245,200,66,0.1);
+  border-bottom:1px solid rgba(245,200,66,0.1);
+  background:rgba(30,42,110,0.2);
+}
+.stat-item{text-align:center;}
+.stat-num{
+  font-family:'Cinzel Decorative',serif;
+  font-size:2.2rem;color:var(--gold);
+  filter:drop-shadow(0 0 12px rgba(245,200,66,0.4));
+  display:block;
+}
+.stat-label{font-size:0.78rem;color:var(--silver);letter-spacing:0.12em;font-family:'Cinzel',serif;opacity:0.75;margin-top:0.2rem;}
+
+/* ── FINAL CTA ─────────────────────────────────────────── */
+#cta{text-align:center;padding:7rem 1.5rem;}
+.cta-glow{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(245,200,66,0.08),transparent 65%);
+  pointer-events:none;
+}
+#cta .section-inner{position:relative;}
+.cta-big{
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(1.8rem,5vw,3.2rem);
+  color:var(--cream);margin-bottom:1rem;
+  line-height:1.2;
+}
+.cta-sub{font-size:1.05rem;color:var(--silver);margin-bottom:2.5rem;opacity:0.85;}
+
+/* ── FOOTER ────────────────────────────────────────────── */
+footer{
+  border-top:1px solid rgba(245,200,66,0.1);
+  padding:2.5rem 1.5rem;
+  text-align:center;
+}
+.footer-logo{
+  font-family:'Cinzel Decorative',serif;
+  font-size:0.95rem;color:var(--gold);
+  margin-bottom:0.75rem;
+  display:flex;align-items:center;justify-content:center;gap:0.5rem;
+}
+.footer-links{
+  display:flex;justify-content:center;gap:2rem;
+  flex-wrap:wrap;margin-bottom:1.2rem;
+}
+.footer-links a{
+  font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:0.08em;
+  color:var(--silver);text-decoration:none;opacity:0.7;
+  transition:opacity 0.2s,color 0.2s;
+}
+.footer-links a:hover{opacity:1;color:var(--gold);}
+.footer-copy{font-size:0.78rem;color:var(--silver);opacity:0.45;}
+
+/* ── SCROLL FADE-IN ────────────────────────────────────── */
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.fade-up.visible{opacity:1;transform:translateY(0);}
+
+/* ── MOBILE NAV ────────────────────────────────────────── */
+@media(max-width:500px){
+  .topnav{padding:1rem 1.25rem;}
+  .hero{padding:4rem 1rem 2.5rem;}
+  section{padding:3.5rem 1rem;}
+  .stats-bar{gap:1.5rem;}
+}
+</style>
 </head>
 <body>
 
 <div id="stars"></div>
 
-<div id="app">
-  <header>
-    <div class="logo-wrap">
-      <div class="logo-glow"></div>
-      <span class="quill-icon">🪄</span>
-      <h1 class="title">The Wizard's Quill</h1>
-      <div class="subtitle">✦ A Magical Reading &amp; Writing Adventure ✦</div>
-    </div>
-  </header>
+<div class="site">
 
-  <nav>
-    <button class="nav-btn active" onclick="showPanel('forge')" id="nav-forge">✍️ Story Forge</button>
-    <button class="nav-btn" onclick="showPanel('library')" id="nav-library">📚 Story Library</button>
-    <button class="nav-btn" onclick="showPanel('hunt')" id="nav-hunt">🔍 Word Hunt</button>
-    <button class="nav-btn" onclick="showPanel('draw')" id="nav-draw">🎨 Magic Canvas</button>
-    <button class="nav-btn" onclick="toggleTheme()" id="theme-toggle">☀️ Light</button>
+  <!-- ── NAV ── -->
+  <nav class="topnav">
+    <a class="topnav-logo" href="/">
+      <span>🪄</span> The Wizard's Quill
+    </a>
+    <a class="topnav-cta" href="/app">Launch the Adventure →</a>
   </nav>
 
-  <main>
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-badge">✦ Free · No sign-up · Works on all devices ✦</div>
+    <span class="quill-float">🪄</span>
+    <h1>The Wizard's<br>Quill</h1>
+    <p class="hero-sub">Forge AI-powered stories, read enchanted tales, hunt hidden words, and paint magical worlds — all in one spellbinding adventure.</p>
+    <div class="hero-actions">
+      <a class="btn-hero btn-primary" href="/app" id="hero-cta">🪄 Begin Your Adventure</a>
+      <a class="btn-hero btn-secondary" href="#features">Explore Features ↓</a>
+    </div>
+  </section>
 
-<!-- ══════════════════════════════════════════
-     PANEL 1: STORY FORGE
-═══════════════════════════════════════════ -->
-<div class="panel active" id="panel-forge">
-  <div class="glass">
-    <div class="section-title">✨ Story Forge</div>
-    <div class="section-sub">Choose your adventure, sprinkle in some magic words, and forge your story!</div>
+  <!-- preview chips -->
+  <div class="preview-strip">
+    <div class="preview-chip">✍️ Story Forge</div>
+    <div class="preview-chip">📚 Story Library</div>
+    <div class="preview-chip">🔍 Word Hunt</div>
+    <div class="preview-chip">🎨 Magic Canvas</div>
+  </div>
 
-    <div class="theme-grid">
-      <div class="theme-card" onclick="selectTheme('adventure')" id="theme-adventure">
-        <span class="emoji">⚔️</span>
-        <div class="name">ADVENTURE</div>
-        <div class="desc">Brave heroes &amp; epic quests</div>
+  <!-- ── STATS ── -->
+  <div class="stats-bar">
+    <div class="stat-item fade-up">
+      <span class="stat-num">4</span>
+      <div class="stat-label">Magical Modes</div>
+    </div>
+    <div class="stat-item fade-up" style="transition-delay:0.1s">
+      <span class="stat-num">13</span>
+      <div class="stat-label">Built-in Stories</div>
+    </div>
+    <div class="stat-item fade-up" style="transition-delay:0.2s">
+      <span class="stat-num">6</span>
+      <div class="stat-label">Word Hunt Worlds</div>
+    </div>
+    <div class="stat-item fade-up" style="transition-delay:0.3s">
+      <span class="stat-num">∞</span>
+      <div class="stat-label">Stories to Forge</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── FEATURES ── -->
+  <section id="features">
+    <div class="section-inner">
+      <div class="section-tag fade-up">What's inside</div>
+      <h2 class="section-heading fade-up">Four magical adventures<br>in one enchanted app</h2>
+      <p class="section-desc fade-up">Every mode is designed to spark creativity, build reading skills, and make learning feel like play.</p>
+
+      <div class="features-grid">
+
+        <div class="feature-card fade-up">
+          <span class="feat-icon">✍️</span>
+          <div class="feat-title">Story Forge</div>
+          <p class="feat-desc">Pick a theme, name your hero, sprinkle in magic words — then let AI craft a personalised story just for you. Every forge produces something new and wonderful.</p>
+          <div class="feat-tags">
+            <span class="feat-tag tag-gold">AI-Powered</span>
+            <span class="feat-tag tag-violet">4 Themes</span>
+            <span class="feat-tag tag-teal">Save & Share</span>
+          </div>
+        </div>
+
+        <div class="feature-card fade-up" style="transition-delay:0.1s">
+          <span class="feat-icon">📚</span>
+          <div class="feat-title">Story Library</div>
+          <p class="feat-desc">Dive into 13 original tales — from whale whisperers to volcanic keepers — with a hidden word-finding game woven into every page. Read and play at once.</p>
+          <div class="feat-tags">
+            <span class="feat-tag tag-gold">13 Stories</span>
+            <span class="feat-tag tag-rose">Word Hunt</span>
+            <span class="feat-tag tag-violet">Easy · Medium · Hard</span>
+          </div>
+        </div>
+
+        <div class="feature-card fade-up" style="transition-delay:0.2s">
+          <span class="feat-icon">🔍</span>
+          <div class="feat-title">Word Hunt</div>
+          <p class="feat-desc">Search six enchanted worlds — Magic, Animals, Nature, Ocean, Space, and Food — for hidden words in a procedurally generated grid. A new puzzle every time.</p>
+          <div class="feat-tags">
+            <span class="feat-tag tag-teal">6 Categories</span>
+            <span class="feat-tag tag-gold">3 Difficulties</span>
+            <span class="feat-tag tag-rose">Score System</span>
+          </div>
+        </div>
+
+        <div class="feature-card fade-up" style="transition-delay:0.3s">
+          <span class="feat-icon">🎨</span>
+          <div class="feat-title">Magic Canvas</div>
+          <p class="feat-desc">Paint your world with an enchanted canvas — choose colours, resize your brush, stamp magical emoji, and save your masterpiece as a PNG. Every stroke is a spell.</p>
+          <div class="feat-tags">
+            <span class="feat-tag tag-violet">8 Colours</span>
+            <span class="feat-tag tag-gold">Custom Brush</span>
+            <span class="feat-tag tag-teal">Save as PNG</span>
+          </div>
+        </div>
+
       </div>
-      <div class="theme-card" onclick="selectTheme('mystery')" id="theme-mystery">
-        <span class="emoji">🔮</span>
-        <div class="name">MYSTERY</div>
-        <div class="desc">Secrets &amp; hidden clues</div>
-      </div>
-      <div class="theme-card" onclick="selectTheme('fantasy')" id="theme-fantasy">
-        <span class="emoji">🐉</span>
-        <div class="name">FANTASY</div>
-        <div class="desc">Dragons, magic &amp; wonder</div>
-      </div>
-      <div class="theme-card selected" onclick="selectTheme('friendship')" id="theme-friendship">
-        <span class="emoji">🌟</span>
-        <div class="name">FRIENDSHIP</div>
-        <div class="desc">Kindness &amp; loyal hearts</div>
-      </div>
     </div>
+  </section>
 
-    <label style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--silver);display:block;margin-bottom:0.5rem;">HERO'S NAME</label>
-    <input type="text" id="hero-name" placeholder="Enter your hero's name..." maxlength="20">
+  <div class="divider"></div>
 
-    <label style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--silver);display:block;margin:1rem 0 0.5rem;">MAGIC WORDS <span style="font-size:0.7rem;opacity:0.6">(click to add)</span></label>
-    <div class="keywords-grid" id="keyword-chips">
-      <div class="keyword-chip" onclick="toggleKeyword(this,'dragon')">🐉 dragon</div>
-      <div class="keyword-chip" onclick="toggleKeyword(this,'castle')">🏰 castle</div>
-      <div class="keyword-chip" onclick="toggleKeyword(this,'treasure')">💎 treasure</div>
-      <div class="keyword-chip" onclick="toggleKeyword(this,'forest')">🌲 forest</div>
-      <div class="keyword-chip" onclick="toggleKeyword(this,'potion')">🧪 potion</div>
-      <div class="keyword-chip" onclick="toggleKeyword(this,'wizard')">🧙 wizard</div>
-      <div class="keyword-chip" onclick="toggleKeyword(this,'ocean')">🌊 ocean</div>
-      <div class="keyword-chip" onclick="toggleKeyword(this,'moonlight')">🌙 moonlight</div>
-      <div class="keyword-chip" onclick="toggleKeyword(this,'phoenix')">🔥 phoenix</div>
-      <div class="keyword-chip" onclick="toggleKeyword(this,'crystal')">💠 crystal</div>
-    </div>
+  <!-- ── HOW IT WORKS ── -->
+  <section id="how">
+    <div class="section-inner" style="text-align:center;">
+      <div class="section-tag fade-up">How it works</div>
+      <h2 class="section-heading fade-up">Your story in three spells</h2>
 
-    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.5rem;">
-      <button class="btn btn-gold" onclick="forgeStory()">🪄 Forge My Story!</button>
-      <button class="btn btn-ghost" onclick="clearForge()">✕ Clear</button>
-    </div>
-  </div>
+      <div class="steps">
+        <div class="step-connector"></div>
+        <div class="step-connector"></div>
 
-  <div id="story-output" class="glass">
-    <div id="story-generating" class="generating" style="display:none;">
-      <span>⚗️ Brewing your story</span>
-      <div class="gen-dots"><span></span><span></span><span></span></div>
-    </div>
-    <div id="story-result" style="display:none;">
-      <div id="story-title-out" class="story-title-display"></div>
-      <div id="story-text-out" class="story-text"></div>
-      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.5rem;">
-        <button class="btn btn-gold" onclick="forgeStory()">🔄 Forge Another!</button>
-        <button class="btn btn-outline" onclick="copyStory()">📋 Copy Story</button>
-        <button class="btn btn-ghost" onclick="saveStory()">💾 Save to Library</button>
+        <div class="step fade-up">
+          <div class="step-num">I</div>
+          <span class="step-icon">⚔️</span>
+          <div class="step-title">Choose Your Theme</div>
+          <p class="step-desc">Pick from Adventure, Mystery, Fantasy, or Friendship — each with its own cast of heroes and worlds.</p>
+        </div>
+
+        <div class="step fade-up" style="transition-delay:0.15s">
+          <div class="step-num">II</div>
+          <span class="step-icon">💠</span>
+          <div class="step-title">Sprinkle Magic Words</div>
+          <p class="step-desc">Select keywords — dragons, castles, moonlight — and give your hero a name. The more magic, the richer the story.</p>
+        </div>
+
+        <div class="step fade-up" style="transition-delay:0.3s">
+          <div class="step-num">III</div>
+          <span class="step-icon">✨</span>
+          <div class="step-title">Watch It Come Alive</div>
+          <p class="step-desc">Hit Forge and the Wizard's Quill weaves your ingredients into a unique, mystical story in seconds.</p>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+  </section>
 
-<!-- ══════════════════════════════════════════
-     PANEL 2: STORY LIBRARY
-═══════════════════════════════════════════ -->
-<div class="panel" id="panel-library">
-  <div class="glass" id="story-list-view">
-    <div class="section-title">📚 Story Library</div>
-    <div class="section-sub">Choose a magical tale to explore — and find all the hidden words!</div>
+  <div class="divider"></div>
 
-    <div class="story-cards" id="story-cards-list"></div>
-  </div>
+  <!-- ── STORY SHOWCASE ── -->
+  <section id="stories" style="background:rgba(13,17,53,0.3);">
+    <div class="section-inner">
+      <div class="section-tag fade-up">Story library preview</div>
+      <h2 class="section-heading fade-up">Thirteen enchanted tales await</h2>
+      <p class="section-desc fade-up">Original stories crafted for curious readers — each one hiding ten secret words for you to find.</p>
 
-  <div id="story-reader" class="glass">
-    <div class="reading-progress"><div class="reading-bar" id="reading-bar"></div></div>
-    <button class="btn btn-ghost" onclick="closeReader()" style="margin-bottom:1.2rem;">← Back to Library</button>
-    <div class="reader-title" id="reader-title"></div>
-    <div class="reader-text" id="reader-body"></div>
-    <div style="margin-top:1.5rem;">
-      <div style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--gold);margin-bottom:0.5rem;">WORD TARGETS</div>
-      <div class="word-bank" id="reader-words"></div>
-      <div style="margin-top:1rem;font-size:0.9rem;color:var(--silver)" id="reader-score-txt"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     PANEL 3: WORD HUNT
-═══════════════════════════════════════════ -->
-<div class="panel" id="panel-hunt">
-  <div class="glass" id="game-start">
-    <div class="section-title">🔍 Word Hunt</div>
-    <div class="section-sub">Find all the hidden words in the magical grid!</div>
-
-    <label style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--silver);display:block;margin-bottom:0.75rem;">CHOOSE YOUR QUEST</label>
-    <div class="category-select" id="cat-select">
-      <div class="cat-btn selected" onclick="selectCat(this,'magic')"><span class="cat-emoji">🧙</span>Magic</div>
-      <div class="cat-btn" onclick="selectCat(this,'animals')"><span class="cat-emoji">🦄</span>Animals</div>
-      <div class="cat-btn" onclick="selectCat(this,'nature')"><span class="cat-emoji">🌿</span>Nature</div>
-      <div class="cat-btn" onclick="selectCat(this,'ocean')"><span class="cat-emoji">🌊</span>Ocean</div>
-      <div class="cat-btn" onclick="selectCat(this,'space')"><span class="cat-emoji">🚀</span>Space</div>
-      <div class="cat-btn" onclick="selectCat(this,'food')"><span class="cat-emoji">🍕</span>Food</div>
-    </div>
-
-    <label style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--silver);display:block;margin:1rem 0 0.5rem;">DIFFICULTY</label>
-    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;">
-      <button class="btn btn-ghost diff-btn" onclick="selectDiff(this,'easy')" style="padding:0.45rem 1rem;font-size:0.8rem;">🌱 Easy</button>
-      <button class="btn btn-ghost diff-btn diff-btn-active" onclick="selectDiff(this,'medium')" style="padding:0.45rem 1rem;font-size:0.8rem;">⚔️ Medium</button>
-      <button class="btn btn-ghost diff-btn" onclick="selectDiff(this,'hard')" style="padding:0.45rem 1rem;font-size:0.8rem;">🔥 Hard</button>
-    </div>
-
-    <button class="btn btn-gold" onclick="startWordHunt()" style="margin-top:0.5rem;">🔍 Start Hunt!</button>
-  </div>
-
-  <div class="glass" id="game-play" style="display:none;">
-    <div class="score-display">
-      <div>
-        <div style="font-size:0.7rem;letter-spacing:0.1em;color:var(--silver);margin-bottom:0.2rem;">SCORE</div>
-        <div class="score-num" id="score-num">0</div>
+      <div class="story-showcase">
+        <div class="showcase-card fade-up">
+          <span class="sc-icon">🏔️</span>
+          <div class="sc-title">The Mountain of a Thousand Steps</div>
+          <div class="sc-desc">A brave climber faces three impossible challenges to reach the summit.</div>
+          <span class="sc-diff diff-medium">medium</span>
+        </div>
+        <div class="showcase-card fade-up" style="transition-delay:0.1s">
+          <span class="sc-icon">🌊</span>
+          <div class="sc-title">The Girl Who Talked to Whales</div>
+          <div class="sc-desc">Deep beneath the ocean, a girl discovers a language older than words.</div>
+          <span class="sc-diff diff-easy">easy</span>
+        </div>
+        <div class="showcase-card fade-up" style="transition-delay:0.2s">
+          <span class="sc-icon">🧙</span>
+          <div class="sc-title">The Apprentice Who Forgot the Rules</div>
+          <div class="sc-desc">What happens when a young wizard ignores every single warning?</div>
+          <span class="sc-diff diff-hard">hard</span>
+        </div>
+        <div class="showcase-card fade-up" style="transition-delay:0.1s">
+          <span class="sc-icon">🤖</span>
+          <div class="sc-title">The Robot Who Learned to Paint</div>
+          <div class="sc-desc">Unit-7 was built to sort boxes. It never expected to discover beauty.</div>
+          <span class="sc-diff diff-easy">easy</span>
+        </div>
+        <div class="showcase-card fade-up" style="transition-delay:0.2s">
+          <span class="sc-icon">🦊</span>
+          <div class="sc-title">The Fox Who Stole Fire</div>
+          <div class="sc-desc">A clever fox risks everything to bring warmth to a freezing forest.</div>
+          <span class="sc-diff diff-medium">medium</span>
+        </div>
+        <div class="showcase-card fade-up" style="transition-delay:0.3s">
+          <span class="sc-icon">🎵</span>
+          <div class="sc-title">The Song That Stopped Time</div>
+          <div class="sc-desc">For three minutes every night, the whole world holds its breath to listen.</div>
+          <span class="sc-diff diff-hard">hard</span>
+        </div>
       </div>
-      <div id="game-title-disp" style="font-family:'Cinzel',serif;font-size:0.9rem;color:var(--gold)"></div>
-      <button class="btn btn-ghost" onclick="quitGame()" style="padding:0.4rem 1rem;font-size:0.75rem;">✕ Quit</button>
+
+      <div style="text-align:center;margin-top:2rem;" class="fade-up">
+        <a class="btn-hero btn-secondary" href="/app" style="font-size:0.85rem;padding:0.7rem 1.8rem;">Read all 13 stories in the app →</a>
+      </div>
     </div>
+  </section>
 
-    <div class="word-bank" id="hunt-word-bank"></div>
+  <div class="divider"></div>
 
-    <div class="word-grid-wrap">
-      <div id="word-grid"></div>
+  <!-- ── FINAL CTA ── -->
+  <section id="cta" style="position:relative;">
+    <div class="cta-glow"></div>
+    <div class="section-inner">
+      <div class="quill-float" style="font-size:3rem;margin-bottom:1rem;" id="cta-quill">🪄</div>
+      <h2 class="cta-big fade-up">Ready to begin<br>your adventure?</h2>
+      <p class="cta-sub fade-up">Free. No account needed. Works on any device.<br>Your story is waiting to be forged.</p>
+      <a class="btn-hero btn-primary fade-up" href="/app" style="font-size:1rem;padding:1.1rem 2.8rem;" id="final-cta">
+        🪄 Launch the Wizard's Quill
+      </a>
     </div>
+  </section>
 
-    <div id="selection-hint" style="min-height:1.5rem;margin-top:0.5rem;font-size:0.85rem;color:var(--silver);font-style:italic;"></div>
-  </div>
-
-  <div class="glass win-screen" id="win-screen">
-    <div class="win-stars">⭐⭐⭐</div>
-    <div class="win-title">Quest Complete!</div>
-    <p style="color:var(--silver);margin:0.5rem 0 1.5rem;font-size:0.95rem;">You found all the hidden words!</p>
-    <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
-      <button class="btn btn-gold" onclick="playAgain()">🔄 New Quest</button>
-      <button class="btn btn-ghost" onclick="quitGame()">📋 Change Quest</button>
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="footer-logo">🪄 The Wizard's Quill</div>
+    <div class="footer-links">
+      <a href="/app">Launch App</a>
+      <a href="#features">Features</a>
+      <a href="#stories">Stories</a>
+      <a href="#how">How It Works</a>
     </div>
-  </div>
-</div>
+    <div class="footer-copy">© 2026 The Wizard's Quill · Built with ✨ and a touch of magic</div>
+  </footer>
 
-<!-- ══════════════════════════════════════════
-     PANEL 4: MAGIC CANVAS
-═══════════════════════════════════════════ -->
-<div class="panel" id="panel-draw">
-  <div class="glass">
-    <div class="section-title">🎨 Magic Canvas</div>
-    <div class="section-sub">Draw your magical world! Every stroke is a spell.</div>
+</div><!-- /.site -->
 
-    <div class="draw-tools" id="draw-tools">
-      <div id="color-btns"></div>
-      <input type="color" id="custom-color" value="#ff6600" title="Custom colour"
-        style="width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,0.25);cursor:pointer;padding:2px;background:transparent;flex-shrink:0;">
-      <div class="tool-divider"></div>
-      <span style="font-size:0.75rem;color:var(--silver);">Size</span>
-      <input type="range" class="size-slider" id="brush-size" min="2" max="40" value="8" oninput="setBrushSize(this.value)">
-      <div class="tool-divider"></div>
-      <button class="btn btn-ghost" onclick="setEraser()" id="eraser-btn" style="padding:0.4rem 0.8rem;font-size:0.85rem;">🧹 Eraser</button>
-      <button class="btn btn-ghost" onclick="clearCanvas()" style="padding:0.4rem 0.8rem;font-size:0.85rem;">🗑️ Clear</button>
-      <button class="btn btn-outline" onclick="saveCanvas()" style="padding:0.4rem 0.8rem;font-size:0.8rem;margin-left:auto;">💾 Save</button>
-    </div>
+<script>
+// Starfield
+(function(){
+  const c=document.getElementById('stars');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div');s.className='star';
+    const sz=Math.random()*2.5+0.5;
+    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s;--min-op:${0.1+Math.random()*0.2};--max-op:${0.6+Math.random()*0.4};`;
+    c.appendChild(s);
+  }
+})();
 
-    <div class="canvas-wrap" id="canvas-wrap">
-      <canvas id="draw-canvas"></canvas>
-    </div>
+// Particles on CTA click
+function spawnParticles(x,y,n=6){
+  const emojis=['✨','⭐','💫','🌟','✦'];
+  for(let i=0;i<n;i++){
+    const p=document.createElement('div');p.className='particle';
+    p.textContent=emojis[~~(Math.random()*emojis.length)];
+    p.style.left=(x+Math.random()*60-30)+'px';
+    p.style.top=(y+Math.random()*40-20)+'px';
+    p.style.animationDelay=(Math.random()*0.3)+'s';
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),2000);
+  }
+}
+document.querySelectorAll('a[href="/app"]').forEach(el=>{
+  el.addEventListener('click',e=>{
+    const r=el.getBoundingClientRect();
+    spawnParticles(r.left+r.width/2,r.top+r.height/2,10);
+  });
+});
 
-    <div style="margin-top:0.75rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
-      <span style="font-size:0.8rem;color:var(--silver);">Quick stamps:</span>
-      <button class="btn btn-ghost" onclick="stampEmoji('⭐')" style="padding:0.3rem 0.6rem;font-size:1rem;">⭐</button>
-      <button class="btn btn-ghost" onclick="stampEmoji('🌙')" style="padding:0.3rem 0.6rem;font-size:1rem;">🌙</button>
-      <button class="btn btn-ghost" onclick="stampEmoji('🐉')" style="padding:0.3rem 0.6rem;font-size:1rem;">🐉</button>
-      <button class="btn btn-ghost" onclick="stampEmoji('🌸')" style="padding:0.3rem 0.6rem;font-size:1rem;">🌸</button>
-      <button class="btn btn-ghost" onclick="stampEmoji('✨')" style="padding:0.3rem 0.6rem;font-size:1rem;">✨</button>
-      <button class="btn btn-ghost" onclick="stampEmoji('🦋')" style="padding:0.3rem 0.6rem;font-size:1rem;">🦋</button>
-      <button class="btn btn-ghost" onclick="stampEmoji('🌈')" style="padding:0.3rem 0.6rem;font-size:1rem;">🌈</button>
-      <button class="btn btn-ghost" onclick="stampEmoji('🏰')" style="padding:0.3rem 0.6rem;font-size:1rem;">🏰</button>
-    </div>
-  </div>
-</div>
-
-  </main>
-</div>
-
-<script src="app.js"></script>
+// Scroll fade-in
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:0.12});
+document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+</script>
 </body>
 </html>

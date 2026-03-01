@@ -1,5 +1,5 @@
-const CACHE_NAME = 'wizards-quill-v1';
-const STATIC_ASSETS = ['/', '/styles.css', '/app.js'];
+const CACHE_NAME = 'wizards-quill-v2';
+const STATIC_ASSETS = ['/', '/app', '/app.html', '/styles.css', '/app.js'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
