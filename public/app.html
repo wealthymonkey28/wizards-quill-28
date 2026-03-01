@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Wizard's Quill ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="stars"></div>
+
+<div id="app">
+  <header>
+    <div class="logo-wrap">
+      <div class="logo-glow"></div>
+      <span class="quill-icon">🪄</span>
+      <h1 class="title">The Wizard's Quill</h1>
+      <div class="subtitle">✦ A Magical Reading &amp; Writing Adventure ✦</div>
+    </div>
+  </header>
+
+  <nav>
+    <button class="nav-btn active" onclick="showPanel('forge')" id="nav-forge">✍️ Story Forge</button>
+    <button class="nav-btn" onclick="showPanel('library')" id="nav-library">📚 Story Library</button>
+    <button class="nav-btn" onclick="showPanel('hunt')" id="nav-hunt">🔍 Word Hunt</button>
+    <button class="nav-btn" onclick="showPanel('draw')" id="nav-draw">🎨 Magic Canvas</button>
+    <button class="nav-btn" onclick="toggleTheme()" id="theme-toggle">☀️ Light</button>
+  </nav>
+
+  <main>
+
+<!-- ══════════════════════════════════════════
+     PANEL 1: STORY FORGE
+═══════════════════════════════════════════ -->
+<div class="panel active" id="panel-forge">
+  <div class="glass">
+    <div class="section-title">✨ Story Forge</div>
+    <div class="section-sub">Choose your adventure, sprinkle in some magic words, and forge your story!</div>
+
+    <div class="theme-grid">
+      <div class="theme-card" onclick="selectTheme('adventure')" id="theme-adventure">
+        <span class="emoji">⚔️</span>
+        <div class="name">ADVENTURE</div>
+        <div class="desc">Brave heroes &amp; epic quests</div>
+      </div>
+      <div class="theme-card" onclick="selectTheme('mystery')" id="theme-mystery">
+        <span class="emoji">🔮</span>
+        <div class="name">MYSTERY</div>
+        <div class="desc">Secrets &amp; hidden clues</div>
+      </div>
+      <div class="theme-card" onclick="selectTheme('fantasy')" id="theme-fantasy">
+        <span class="emoji">🐉</span>
+        <div class="name">FANTASY</div>
+        <div class="desc">Dragons, magic &amp; wonder</div>
+      </div>
+      <div class="theme-card selected" onclick="selectTheme('friendship')" id="theme-friendship">
+        <span class="emoji">🌟</span>
+        <div class="name">FRIENDSHIP</div>
+        <div class="desc">Kindness &amp; loyal hearts</div>
+      </div>
+    </div>
+
+    <label style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--silver);display:block;margin-bottom:0.5rem;">HERO'S NAME</label>
+    <input type="text" id="hero-name" placeholder="Enter your hero's name..." maxlength="20">
+
+    <label style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--silver);display:block;margin:1rem 0 0.5rem;">MAGIC WORDS <span style="font-size:0.7rem;opacity:0.6">(click to add)</span></label>
+    <div class="keywords-grid" id="keyword-chips">
+      <div class="keyword-chip" onclick="toggleKeyword(this,'dragon')">🐉 dragon</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'castle')">🏰 castle</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'treasure')">💎 treasure</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'forest')">🌲 forest</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'potion')">🧪 potion</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'wizard')">🧙 wizard</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'ocean')">🌊 ocean</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'moonlight')">🌙 moonlight</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'phoenix')">🔥 phoenix</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'crystal')">💠 crystal</div>
+    </div>
+
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.5rem;">
+      <button class="btn btn-gold" onclick="forgeStory()">🪄 Forge My Story!</button>
+      <button class="btn btn-ghost" onclick="clearForge()">✕ Clear</button>
+    </div>
+  </div>
+
+  <div id="story-output" class="glass">
+    <div id="story-generating" class="generating" style="display:none;">
+      <span>⚗️ Brewing your story</span>
+      <div class="gen-dots"><span></span><span></span><span></span></div>
+    </div>
+    <div id="story-result" style="display:none;">
+      <div id="story-title-out" class="story-title-display"></div>
+      <div id="story-text-out" class="story-text"></div>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.5rem;">
+        <button class="btn btn-gold" onclick="forgeStory()">🔄 Forge Another!</button>
+        <button class="btn btn-outline" onclick="copyStory()">📋 Copy Story</button>
+        <button class="btn btn-ghost" onclick="saveStory()">💾 Save to Library</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 2: STORY LIBRARY
+═══════════════════════════════════════════ -->
+<div class="panel" id="panel-library">
+  <div class="glass" id="story-list-view">
+    <div class="section-title">📚 Story Library</div>
+    <div class="section-sub">Choose a magical tale to explore — and find all the hidden words!</div>
+
+    <div class="story-cards" id="story-cards-list"></div>
+  </div>
+
+  <div id="story-reader" class="glass">
+    <div class="reading-progress"><div class="reading-bar" id="reading-bar"></div></div>
+    <button class="btn btn-ghost" onclick="closeReader()" style="margin-bottom:1.2rem;">← Back to Library</button>
+    <div class="reader-title" id="reader-title"></div>
+    <div class="reader-text" id="reader-body"></div>
+    <div style="margin-top:1.5rem;">
+      <div style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--gold);margin-bottom:0.5rem;">WORD TARGETS</div>
+      <div class="word-bank" id="reader-words"></div>
+      <div style="margin-top:1rem;font-size:0.9rem;color:var(--silver)" id="reader-score-txt"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 3: WORD HUNT
+═══════════════════════════════════════════ -->
+<div class="panel" id="panel-hunt">
+  <div class="glass" id="game-start">
+    <div class="section-title">🔍 Word Hunt</div>
+    <div class="section-sub">Find all the hidden words in the magical grid!</div>
+
+    <label style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--silver);display:block;margin-bottom:0.75rem;">CHOOSE YOUR QUEST</label>
+    <div class="category-select" id="cat-select">
+      <div class="cat-btn selected" onclick="selectCat(this,'magic')"><span class="cat-emoji">🧙</span>Magic</div>
+      <div class="cat-btn" onclick="selectCat(this,'animals')"><span class="cat-emoji">🦄</span>Animals</div>
+      <div class="cat-btn" onclick="selectCat(this,'nature')"><span class="cat-emoji">🌿</span>Nature</div>
+      <div class="cat-btn" onclick="selectCat(this,'ocean')"><span class="cat-emoji">🌊</span>Ocean</div>
+      <div class="cat-btn" onclick="selectCat(this,'space')"><span class="cat-emoji">🚀</span>Space</div>
+      <div class="cat-btn" onclick="selectCat(this,'food')"><span class="cat-emoji">🍕</span>Food</div>
+    </div>
+
+    <label style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--silver);display:block;margin:1rem 0 0.5rem;">DIFFICULTY</label>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+      <button class="btn btn-ghost diff-btn" onclick="selectDiff(this,'easy')" style="padding:0.45rem 1rem;font-size:0.8rem;">🌱 Easy</button>
+      <button class="btn btn-ghost diff-btn diff-btn-active" onclick="selectDiff(this,'medium')" style="padding:0.45rem 1rem;font-size:0.8rem;">⚔️ Medium</button>
+      <button class="btn btn-ghost diff-btn" onclick="selectDiff(this,'hard')" style="padding:0.45rem 1rem;font-size:0.8rem;">🔥 Hard</button>
+    </div>
+
+    <button class="btn btn-gold" onclick="startWordHunt()" style="margin-top:0.5rem;">🔍 Start Hunt!</button>
+  </div>
+
+  <div class="glass" id="game-play" style="display:none;">
+    <div class="score-display">
+      <div>
+        <div style="font-size:0.7rem;letter-spacing:0.1em;color:var(--silver);margin-bottom:0.2rem;">SCORE</div>
+        <div class="score-num" id="score-num">0</div>
+      </div>
+      <div id="game-title-disp" style="font-family:'Cinzel',serif;font-size:0.9rem;color:var(--gold)"></div>
+      <button class="btn btn-ghost" onclick="quitGame()" style="padding:0.4rem 1rem;font-size:0.75rem;">✕ Quit</button>
+    </div>
+
+    <div class="word-bank" id="hunt-word-bank"></div>
+
+    <div class="word-grid-wrap">
+      <div id="word-grid"></div>
+    </div>
+
+    <div id="selection-hint" style="min-height:1.5rem;margin-top:0.5rem;font-size:0.85rem;color:var(--silver);font-style:italic;"></div>
+  </div>
+
+  <div class="glass win-screen" id="win-screen">
+    <div class="win-stars">⭐⭐⭐</div>
+    <div class="win-title">Quest Complete!</div>
+    <p style="color:var(--silver);margin:0.5rem 0 1.5rem;font-size:0.95rem;">You found all the hidden words!</p>
+    <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+      <button class="btn btn-gold" onclick="playAgain()">🔄 New Quest</button>
+      <button class="btn btn-ghost" onclick="quitGame()">📋 Change Quest</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 4: MAGIC CANVAS
+═══════════════════════════════════════════ -->
+<div class="panel" id="panel-draw">
+  <div class="glass">
+    <div class="section-title">🎨 Magic Canvas</div>
+    <div class="section-sub">Draw your magical world! Every stroke is a spell.</div>
+
+    <div class="draw-tools" id="draw-tools">
+      <div id="color-btns"></div>
+      <input type="color" id="custom-color" value="#ff6600" title="Custom colour"
+        style="width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,0.25);cursor:pointer;padding:2px;background:transparent;flex-shrink:0;">
+      <div class="tool-divider"></div>
+      <span style="font-size:0.75rem;color:var(--silver);">Size</span>
+      <input type="range" class="size-slider" id="brush-size" min="2" max="40" value="8" oninput="setBrushSize(this.value)">
+      <div class="tool-divider"></div>
+      <button class="btn btn-ghost" onclick="setEraser()" id="eraser-btn" style="padding:0.4rem 0.8rem;font-size:0.85rem;">🧹 Eraser</button>
+      <button class="btn btn-ghost" onclick="clearCanvas()" style="padding:0.4rem 0.8rem;font-size:0.85rem;">🗑️ Clear</button>
+      <button class="btn btn-outline" onclick="saveCanvas()" style="padding:0.4rem 0.8rem;font-size:0.8rem;margin-left:auto;">💾 Save</button>
+    </div>
+
+    <div class="canvas-wrap" id="canvas-wrap">
+      <canvas id="draw-canvas"></canvas>
+    </div>
+
+    <div style="margin-top:0.75rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+      <span style="font-size:0.8rem;color:var(--silver);">Quick stamps:</span>
+      <button class="btn btn-ghost" onclick="stampEmoji('⭐')" style="padding:0.3rem 0.6rem;font-size:1rem;">⭐</button>
+      <button class="btn btn-ghost" onclick="stampEmoji('🌙')" style="padding:0.3rem 0.6rem;font-size:1rem;">🌙</button>
+      <button class="btn btn-ghost" onclick="stampEmoji('🐉')" style="padding:0.3rem 0.6rem;font-size:1rem;">🐉</button>
+      <button class="btn btn-ghost" onclick="stampEmoji('🌸')" style="padding:0.3rem 0.6rem;font-size:1rem;">🌸</button>
+      <button class="btn btn-ghost" onclick="stampEmoji('✨')" style="padding:0.3rem 0.6rem;font-size:1rem;">✨</button>
+      <button class="btn btn-ghost" onclick="stampEmoji('🦋')" style="padding:0.3rem 0.6rem;font-size:1rem;">🦋</button>
+      <button class="btn btn-ghost" onclick="stampEmoji('🌈')" style="padding:0.3rem 0.6rem;font-size:1rem;">🌈</button>
+      <button class="btn btn-ghost" onclick="stampEmoji('🏰')" style="padding:0.3rem 0.6rem;font-size:1rem;">🏰</button>
+    </div>
+  </div>
+</div>
+
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
