@@ -487,6 +487,8 @@ header { padding: 1.5rem 1rem 1rem; }
 .grid-cell { width:27px; height:27px; font-size:0.72rem; }
 }
 
+.diff-btn-active { background: rgba(245,200,66,0.15) !important; border-color: var(--gold) !important; color: var(--gold) !important; }
+
 /* ── LIGHT MODE ─────────────────────────────────────────── */
 body.light-mode {
   background: #fdf6e3;
@@ -631,6 +633,7 @@ body.light-mode .reader-title { color: var(--gold2); }
       <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.5rem;">
         <button class="btn btn-gold" onclick="forgeStory()">🔄 Forge Another!</button>
         <button class="btn btn-outline" onclick="copyStory()">📋 Copy Story</button>
+        <button class="btn btn-ghost" onclick="saveStory()">💾 Save to Library</button>
       </div>
     </div>
   </div>
@@ -678,7 +681,14 @@ body.light-mode .reader-title { color: var(--gold2); }
       <div class="cat-btn" onclick="selectCat(this,'food')"><span class="cat-emoji">🍕</span>Food</div>
     </div>
 
-    <button class="btn btn-gold" onclick="startWordHunt()" style="margin-top:1.5rem;">🔍 Start Hunt!</button>
+    <label style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--silver);display:block;margin:1rem 0 0.5rem;">DIFFICULTY</label>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+      <button class="btn btn-ghost diff-btn" onclick="selectDiff(this,'easy')" style="padding:0.45rem 1rem;font-size:0.8rem;">🌱 Easy</button>
+      <button class="btn btn-ghost diff-btn diff-btn-active" onclick="selectDiff(this,'medium')" style="padding:0.45rem 1rem;font-size:0.8rem;">⚔️ Medium</button>
+      <button class="btn btn-ghost diff-btn" onclick="selectDiff(this,'hard')" style="padding:0.45rem 1rem;font-size:0.8rem;">🔥 Hard</button>
+    </div>
+
+    <button class="btn btn-gold" onclick="startWordHunt()" style="margin-top:0.5rem;">🔍 Start Hunt!</button>
   </div>
 
   <div class="glass" id="game-play" style="display:none;">
@@ -721,6 +731,8 @@ body.light-mode .reader-title { color: var(--gold2); }
 
     <div class="draw-tools" id="draw-tools">
       <div id="color-btns"></div>
+      <input type="color" id="custom-color" value="#ff6600" title="Custom colour"
+        style="width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,0.25);cursor:pointer;padding:2px;background:transparent;flex-shrink:0;">
       <div class="tool-divider"></div>
       <span style="font-size:0.75rem;color:var(--silver);">Size</span>
       <input type="range" class="size-slider" id="brush-size" min="2" max="40" value="8" oninput="setBrushSize(this.value)">
@@ -801,6 +813,7 @@ function showPanel(name){
   const btn=document.getElementById('nav-'+name);
   const r=btn.getBoundingClientRect();
   spawnParticles(r.left+r.width/2, r.top+r.height/2, 4);
+  if(name==='library') initLibrary();
 }
 
 // ════════════════════════════════════════════════════════
@@ -967,6 +980,18 @@ function copyStory(){
   });
 }
 
+function saveStory(){
+  const title=document.getElementById('story-title-out').textContent;
+  const text=document.getElementById('story-text-out').innerHTML;
+  const icons={adventure:'⚔️',mystery:'🔮',fantasy:'🐉',friendship:'🌟'};
+  const saved=JSON.parse(localStorage.getItem('wq-saved-stories')||'[]');
+  saved.unshift({title,text,icon:icons[selectedTheme]||'✨',date:Date.now()});
+  localStorage.setItem('wq-saved-stories',JSON.stringify(saved.slice(0,20)));
+  const btn=event.target; btn.innerHTML='✅ Saved!'; btn.disabled=true;
+  spawnParticles(btn.getBoundingClientRect().left+30, btn.getBoundingClientRect().top, 8);
+  setTimeout(()=>{btn.innerHTML='💾 Save to Library';btn.disabled=false;},2000);
+}
+
 // ════════════════════════════════════════════════════════
 // MODE 2: STORY LIBRARY
 // ════════════════════════════════════════════════════════
@@ -1030,12 +1055,138 @@ const LIBRARY=[
     <p>Soren figured the next alignment was in eleven days. They had timed it exactly. They packed food for two weeks, a full mapping kit, and — their mother's most important rule — two ways to contact home.</p>
     <p>What they found at the bottom of the canyon was not rock or ice or ancient ruin. It was an entire ecosystem — plants that had never seen sunlight, creatures that navigated by magnetic pulse, a whole world that existed only in the dark.</p>
     <p>Soren catalogued every last detail. When the alignment came and the gravity cleared, they emerged into the twin-sun light carrying the most important scientific discovery in Ember's history — and a quiet certainty that the universe still had infinite room left to astonish them.</p>`
+  },
+  {
+    id:5, icon:'🦊', title:'The Fox Who Stole Fire',
+    desc:'A clever fox risks everything to bring warmth to a freezing forest.',
+    diff:'medium',
+    words:['FOX','FIRE','FOREST','WARM','BRAVE','TRICK','SPARK','DARK','COLD','GIFT'],
+    text:`<p>Long ago, when the world was young and winters were cruel, all the fire in the world was kept by a giant who lived at the top of a glass mountain and let nobody else have it.</p>
+    <p>The animals of the great forest were freezing. The bears shivered in their caves. The rabbits huddled together and still couldn't get warm. It was the fox who finally said: "Enough. I will go and get it."</p>
+    <p>Everyone told her she was too small, too clever for her own good, and almost certainly going to fail. The fox considered this for a moment, then left anyway.</p>
+    <p>She climbed the glass mountain on her careful paws — each step placed just so. At the top, the giant sat sleeping beside an enormous fire. The fox crept close, curled her great bushy tail into the flames, and ran.</p>
+    <p>The giant woke and roared. The fox ran faster. Her tail burned bright as a comet all the way down the mountain, and everywhere a spark fell, a small fire bloomed in the snow.</p>
+    <p>By the time she reached the forest, her tail was singed short and a little crooked — and that is why foxes have such peculiar tails to this day. But the forest was warm, and warm it stayed. The fox called it a fair trade.</p>`
+  },
+  {
+    id:6, icon:'🌺', title:'The Garden at the End of the World',
+    desc:'A girl follows a seed to the edge of the map — and finds something unexpected.',
+    diff:'easy',
+    words:['GARDEN','SEED','GROW','FLOWER','PATH','WONDER','GREEN','BLOOM','EARTH','LIGHT'],
+    text:`<p>The seed arrived on a Wednesday — small, silver, and absolutely not from around here. It landed in Pepper's garden while she was eating breakfast, and it glowed faintly, which normal seeds do not do.</p>
+    <p>She planted it. By Thursday it was a shoot. By Friday it was taller than her. By Saturday it had a door in it — a small wooden door with a handle made of twisted roots.</p>
+    <p>Pepper opened it, because of course she did.</p>
+    <p>On the other side was a garden so vast she couldn't see the edges. Every flower that had ever existed grew here in colors she had no words for. The air smelled like every good summer rolled into one long breath.</p>
+    <p>At the center of the garden sat an old woman watering a tiny patch of ordinary daisies. "You found it," the woman said, unsurprised. "They always do, eventually — the ones who notice growing things."</p>
+    <p>Pepper stayed until sunset, then walked back through the door with three seeds in her pocket and the quiet certainty that the world was stranger and lovelier than anyone had bothered to tell her.</p>`
+  },
+  {
+    id:7, icon:'🚂', title:'The Midnight Express to Nowhere',
+    desc:'A train that appears once a year — and only if you really need it.',
+    diff:'hard',
+    words:['TRAIN','MIDNIGHT','TICKET','JOURNEY','MYSTERY','DARK','STATION','WINDOW','ARRIVE','LOST'],
+    text:`<p>The station had been closed for thirty years. The sign was rusted, the benches cracked, the clock frozen at 11:58. Everyone in town agreed there was nothing interesting about it.</p>
+    <p>Eleven-year-old Otis disagreed. He had found a ticket — real, paper, with his name printed on it — tucked under the mat of his grandmother's attic. The departure time: midnight. The destination: blank.</p>
+    <p>He arrived at the station at 11:55, certain he was either being very brave or very foolish. The clock, which had not moved in thirty years, ticked forward to 11:59.</p>
+    <p>At midnight exactly, lights appeared at the far end of the track. A train arrived that was not there a moment before — midnight blue, quiet as snowfall, every window golden.</p>
+    <p>The conductor, a tall woman with kind eyes and an improbable hat, glanced at his ticket. "Ah. The lost things carriage. Second on the left."</p>
+    <p>In that carriage Otis found everything he thought he'd lost: his confidence before the school play, the afternoon he'd wasted being cruel to his sister, and something harder to name — a version of himself he'd been afraid he'd left behind. He took them all back. The train vanished at dawn. He never found out where it went. It didn't matter.</p>`
+  },
+  {
+    id:8, icon:'👻', title:'The Ghost Who Just Wanted to Sleep',
+    desc:'Haunting a house is exhausting. Gerald would like everyone to please be quiet.',
+    diff:'easy',
+    words:['GHOST','SLEEP','HOUSE','QUIET','NIGHT','TIRED','GROAN','DOOR','FUNNY','REST'],
+    text:`<p>Gerald had been haunting Thornwick House for two hundred years and he was absolutely exhausted.</p>
+    <p>The problem was that nobody took haunting seriously anymore. He would rattle a chain — they would say "what a funny old house." He would groan dramatically from the cellar — they would say "must be the pipes." He made a door swing open by itself three times in one evening and the family simply used it as a draught solution and propped it open with a shoe.</p>
+    <p>All Gerald wanted was a bit of peace and quiet so he could sleep through the next century. Was that so much to ask?</p>
+    <p>He tried leaving a note. The note said: "I am a ghost. I am very tired. Please keep the noise down after nine." The family kept the note on the fridge for years and showed it to guests at dinner parties.</p>
+    <p>Eventually, Gerald gave up on haunting entirely. He found a comfortable spot in the attic, next to a box of old novels, and slept for forty years.</p>
+    <p>When he woke up, the family had left a blanket for him and a small sign that said: "Reserved for Gerald." He thought that was rather decent of them. He stayed.</p>`
+  },
+  {
+    id:9, icon:'🦁', title:'The Lion Who Learned to Listen',
+    desc:'The most powerful creature in the savanna had one thing left to master.',
+    diff:'easy',
+    words:['LION','LISTEN','PROUD','QUIET','FRIEND','LEARN','ROAR','WISE','KIND','HEART'],
+    text:`<p>Kovu was the loudest lion on the savanna and he was very proud of it. His roar could be heard for five miles. His opinions could be heard for ten.</p>
+    <p>He had advice for everyone: the zebras were running wrong, the elephants were eating in the wrong place, the meerkats were entirely too cheerful. He said all of this very loudly and very often.</p>
+    <p>One morning he came across a very old tortoise sitting in complete silence, watching the sunrise. "Why don't you say anything?" Kovu demanded. "Don't you have opinions?"</p>
+    <p>"Many," said the tortoise. "But I find that if I stay quiet long enough, I hear things worth knowing."</p>
+    <p>Kovu sat down, mostly to prove this was nonsense. He waited. And then — slowly — he heard: the grass whispering the direction of water, a bird warning of a storm, a young cub crying softly three hills away.</p>
+    <p>He went and found the cub, who was lost, and brought her home. On the way back, he didn't say a single word. It was the most useful thing he had ever done. He visited the tortoise every morning after that, and he always remembered to listen first.</p>`
+  },
+  {
+    id:10, icon:'🌋', title:'The Last Volcano Keeper',
+    desc:'Every volcano needs a keeper. Mara was the last one left who remembered how.',
+    diff:'medium',
+    words:['VOLCANO','FIRE','KEEP','LAVA','BRAVE','EARTH','GLOW','ERUPT','GUARD','ANCIENT'],
+    text:`<p>The job of Volcano Keeper had been in Mara's family for eleven generations. Most people had forgotten the job existed. Mara had not forgotten, but she was beginning to wish the volcano had.</p>
+    <p>The volcano — she called it Old Red — was temperamental. It grumbled when the seasons changed, hissed when it rained, and on one memorable occasion erupted slightly because a tourist stood on the wrong rock and said "is that it?" in a disappointed tone.</p>
+    <p>Mara's job was to keep it calm. This involved daily conversations, occasional gifts of fruit, and a complex series of songs that her grandmother had taught her before she died. The songs were embarrassing to sing in public, but they worked.</p>
+    <p>The year she turned thirteen, Old Red began to rumble in a way she'd never heard. A deep, old rumble — the kind that meant something serious. She climbed to the caldera alone and sang every song she knew.</p>
+    <p>The rumbling slowed. Then stopped. And in the quiet that followed, she heard — or imagined she heard — a sound like breathing, deep and slow, from somewhere far below.</p>
+    <p>"You're welcome," she said, and climbed back down. Old Red did not erupt for another forty years. Mara considered that a successful morning's work.</p>`
+  },
+  {
+    id:11, icon:'🎵', title:'The Song That Stopped Time',
+    desc:'For three minutes every night, the whole world holds its breath to listen.',
+    diff:'hard',
+    words:['MUSIC','SONG','TIME','STILL','MAGIC','VOICE','NIGHT','SPELL','CHORD','WONDER'],
+    text:`<p>Nobody knew who sang it first. Some said it was a shepherd girl in the mountains; others claimed it was a sailor who learned it from the whales. All anyone knew was that if you sang it — really sang it, with your whole chest and your whole heart — time stopped for exactly three minutes.</p>
+    <p>Not metaphorically. Actually stopped. Birds hung motionless in the air. Rivers paused mid-ripple. The wind fell utterly silent.</p>
+    <p>Twelve-year-old Iris discovered this by accident on a Tuesday evening when she was very upset and sang louder than she meant to. When the world unfroze around her, she stood very still for a long time, trying to understand what had just happened.</p>
+    <p>She used the gift carefully at first — once to stop a car from sliding into a fence, once to catch her little brother before he fell from a climbing frame. Small things. Quiet things.</p>
+    <p>The last time she sang it, she was eighty-one, sitting on a porch in the evening light. She sang it slowly, for no particular reason except that the world was beautiful and she wanted three more minutes of it.</p>
+    <p>When time resumed, she was smiling. Some magic, she had decided long ago, is not given to you to change the world. It is given to you to help you notice it.</p>`
+  },
+  {
+    id:12, icon:'🦅', title:"The Eagle's Last Lesson",
+    desc:'High above the mountains, the oldest eagle teaches one final class.',
+    diff:'medium',
+    words:['EAGLE','FLY','WIND','HIGH','LESSON','BRAVE','SOAR','CLOUD','PEAK','FREE'],
+    text:`<p>Talon was the oldest eagle in the mountain range and she had taught every young eagle who had ever flown from these peaks. She was patient, exacting, and absolutely not interested in excuses about wind direction.</p>
+    <p>Her final student was also her most difficult: a young eagle named Pip who was terrified of heights.</p>
+    <p>This was, Talon acknowledged privately, something of an inconvenience for an eagle.</p>
+    <p>Every morning they went to the ledge. Every morning Pip looked down and retreated. Talon did not shout or shame him. She sat beside him and watched the clouds instead. "What do you see?" she would ask.</p>
+    <p>"A very long way down," Pip always said.</p>
+    <p>"Look further," she said, on the last morning. "Past the down. What's out there?"</p>
+    <p>Pip looked. Past the drop, past the valley floor, past the river — the whole world, blue and gold and endless. He had been so focused on the fall he had never looked at where falling would take him.</p>
+    <p>He opened his wings. The wind took him. He did not fall.</p>
+    <p>Talon watched him go, riding a thermal until he was a dark speck against the sun. "There," she said to nobody in particular, in the satisfied tone of a teacher whose work is done.</p>`
   }
 ];
 
 function initLibrary(){
   const list=document.getElementById('story-cards-list');
   list.innerHTML='';
+
+  const saved=JSON.parse(localStorage.getItem('wq-saved-stories')||'[]');
+  if(saved.length>0){
+    const h=document.createElement('div');
+    h.style.cssText='font-family:"Cinzel",serif;font-size:0.78rem;letter-spacing:0.12em;color:var(--gold);margin-bottom:0.6rem;';
+    h.textContent='✨ MY STORIES';
+    list.appendChild(h);
+    saved.forEach((s,i)=>{
+      const div=document.createElement('div');
+      div.className='story-card';
+      div.onclick=()=>openSavedStory(i);
+      div.innerHTML=`
+        <div class="sc-icon">${s.icon}</div>
+        <div class="sc-info">
+          <div class="sc-title">${s.title}</div>
+          <div class="sc-desc">Your forged story · ${new Date(s.date).toLocaleDateString()}</div>
+        </div>
+        <span class="diff-badge" style="background:rgba(122,94,167,0.2);color:#c4b5fd;border:1px solid rgba(122,94,167,0.35);">mine</span>
+      `;
+      list.appendChild(div);
+    });
+    const divider=document.createElement('div');
+    divider.style.cssText='font-family:"Cinzel",serif;font-size:0.78rem;letter-spacing:0.12em;color:var(--silver);margin:1rem 0 0.6rem;opacity:0.7;';
+    divider.textContent='📚 STORY LIBRARY';
+    list.appendChild(divider);
+  }
+
   LIBRARY.forEach(story=>{
     const div=document.createElement('div');
     div.className='story-card';
@@ -1050,6 +1201,20 @@ function initLibrary(){
     `;
     list.appendChild(div);
   });
+}
+
+function openSavedStory(idx){
+  const saved=JSON.parse(localStorage.getItem('wq-saved-stories')||'[]');
+  const s=saved[idx];
+  document.getElementById('story-list-view').style.display='none';
+  const reader=document.getElementById('story-reader');
+  reader.style.display='block';
+  document.getElementById('reader-title').textContent=s.icon+' '+s.title;
+  document.getElementById('reader-body').innerHTML=s.text;
+  document.getElementById('reader-words').innerHTML='';
+  document.getElementById('reader-score-txt').textContent='Your very own forged story ✨';
+  document.getElementById('reading-bar').style.width='0%';
+  reader.scrollIntoView({behavior:'smooth'});
 }
 
 let readerWords=[];
@@ -1126,15 +1291,16 @@ initLibrary();
 // MODE 3: WORD HUNT
 // ════════════════════════════════════════════════════════
 const WORD_SETS={
-  magic:  {label:'⚗️ Magic',    words:['SPELL','WAND','WIZARD','MAGIC','POTION','RUNE','CHARM','ENCHANT']},
-  animals:{label:'🦄 Animals',  words:['DRAGON','PHOENIX','UNICORN','GRIFFIN','WOLF','EAGLE','TIGER','PANDA']},
-  nature: {label:'🌿 Nature',   words:['BLOOM','FOREST','RIVER','STORM','CRYSTAL','MOUNTAIN','PETAL','FROST']},
-  ocean:  {label:'🌊 Ocean',    words:['WHALE','CORAL','TIDE','PEARL','SHARK','ANCHOR','WAVE','ABYSS']},
-  space:  {label:'🚀 Space',    words:['STAR','COMET','ORBIT','NOVA','GALAXY','COSMOS','MOON','NEBULA']},
-  food:   {label:'🍕 Food',     words:['PIZZA','CAKE','HONEY','BERRY','MANGO','LEMON','TOAST','WAFFLE']},
+  magic:  {label:'⚗️ Magic',    words:['SPELL','WAND','WIZARD','MAGIC','POTION','RUNE','CHARM','ENCHANT','MYSTIC','ARCANE']},
+  animals:{label:'🦄 Animals',  words:['DRAGON','PHOENIX','UNICORN','GRIFFIN','WOLF','EAGLE','TIGER','PANDA','LYNX','RAVEN']},
+  nature: {label:'🌿 Nature',   words:['BLOOM','FOREST','RIVER','STORM','CRYSTAL','MOUNTAIN','PETAL','FROST','BREEZE','MEADOW']},
+  ocean:  {label:'🌊 Ocean',    words:['WHALE','CORAL','TIDE','PEARL','SHARK','ANCHOR','WAVE','ABYSS','KELP','DRIFT']},
+  space:  {label:'🚀 Space',    words:['STAR','COMET','ORBIT','NOVA','GALAXY','COSMOS','MOON','NEBULA','QUASAR','PULSAR']},
+  food:   {label:'🍕 Food',     words:['PIZZA','CAKE','HONEY','BERRY','MANGO','LEMON','TOAST','WAFFLE','CREAM','MAPLE']},
 };
 
 let currentCat='magic';
+let currentDiff='medium';
 let grid=[];
 let gridSize=12;
 let placedWords=[];
@@ -1148,6 +1314,12 @@ function selectCat(el,cat){
   document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('selected'));
   el.classList.add('selected');
   currentCat=cat;
+}
+
+function selectDiff(el,diff){
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('diff-btn-active'));
+  el.classList.add('diff-btn-active');
+  currentDiff=diff;
 }
 
 function startWordHunt(){
@@ -1175,8 +1347,11 @@ function playAgain(){
 }
 
 function buildGrid(){
-  const words=WORD_SETS[currentCat].words;
-  gridSize=12;
+  const allWords=WORD_SETS[currentCat].words;
+  const diffMap={easy:{size:8,count:5},medium:{size:12,count:8},hard:{size:15,count:10}};
+  const {size,count}=diffMap[currentDiff];
+  gridSize=size;
+  const words=allWords.slice(0,count);
   grid=Array.from({length:gridSize},()=>Array(gridSize).fill(''));
   placedWords=[];
 
@@ -1224,7 +1399,8 @@ function placeWord(word,r,c,[dr,dc]){
 
 function renderGrid(){
   const container=document.getElementById('word-grid');
-  container.style.gridTemplateColumns=`repeat(${gridSize},32px)`;
+  const cellSize=gridSize<=8?38:gridSize<=12?32:26;
+  container.style.gridTemplateColumns=`repeat(${gridSize},${cellSize}px)`;
   container.innerHTML='';
 
   for(let r=0;r<gridSize;r++){
@@ -1233,6 +1409,8 @@ function renderGrid(){
       cell.className='grid-cell';
       cell.textContent=grid[r][c];
       cell.dataset.r=r; cell.dataset.c=c;
+      cell.style.width=cellSize+'px'; cell.style.height=cellSize+'px';
+      if(cellSize<32) cell.style.fontSize='0.72rem';
 
       cell.addEventListener('pointerdown',(e)=>{
         e.preventDefault();
@@ -1309,7 +1487,10 @@ function checkSelection(){
     huntScore+=found.length*10;
     document.getElementById('score-num').textContent=huntScore;
     markWordFound(found);
-    spawnParticles(window.innerWidth/2, 200, 10);
+    const midCell=selectedCells[Math.floor(selectedCells.length/2)];
+    const midEl=midCell?getCell(midCell[0],midCell[1]):null;
+    if(midEl){const r=midEl.getBoundingClientRect();spawnParticles(r.left+r.width/2,r.top+r.height/2,12);}
+    else{spawnParticles(window.innerWidth/2,200,10);}
 
     if(foundWordsSet.size===placedWords.length){
       setTimeout(()=>{
@@ -1376,6 +1557,13 @@ function initCanvas(){
     btn.id='col-'+i;
     btn.onclick=()=>setColor(col,i);
     cb.appendChild(btn);
+  });
+
+  // Custom colour picker
+  document.getElementById('custom-color').addEventListener('input',function(){
+    currentColor=this.value; isEraser=false; stampMode=null;
+    document.querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('eraser-btn').classList.remove('active');
   });
 }
 
