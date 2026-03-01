@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Wizard's Quill ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --midnight: #06091a;
+  --deep:     #0d1135;
+  --navy:     #121845;
+  --indigo:   #1e2a6e;
+  --violet:   #4a3f8f;
+  --purple:   #7b5ea7;
+  --gold:     #f5c842;
+  --gold2:    #e8a020;
+  --amber:    #f9a825;
+  --cream:    #fef9ec;
+  --silver:   #c8d0e8;
+  --rose:     #e85d8a;
+  --teal:     #2ed8c3;
+  --glow:     rgba(245,200,66,0.15);
+}
+
+- { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+background: var(–midnight);
+font-family: ‘Nunito’, sans-serif;
+color: var(–cream);
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+/* ── STARFIELD ─────────────────────────────────────────── */
+#stars {
+position: fixed; top:0; left:0; width:100%; height:100%;
+pointer-events: none; z-index:0; overflow:hidden;
+}
+.star {
+position: absolute; background: white; border-radius: 50%;
+animation: twinkle var(–d, 3s) var(–delay, 0s) infinite ease-in-out;
+}
+@keyframes twinkle {
+0%,100% { opacity: var(–min-op, 0.1); transform: scale(1); }
+50%      { opacity: var(–max-op, 0.9); transform: scale(1.4); }
+}
+
+/* ── PARTICLES ─────────────────────────────────────────── */
+.particle {
+position: fixed; pointer-events:none; z-index:9999;
+font-size: 1.2rem;
+animation: floatUp 1.5s ease-out forwards;
+}
+@keyframes floatUp {
+0%   { opacity:1; transform: translateY(0) scale(1) rotate(0deg); }
+100% { opacity:0; transform: translateY(-120px) scale(0.3) rotate(360deg); }
+}
+
+/* ── LAYOUT ────────────────────────────────────────────── */
+#app {
+position: relative; z-index:1;
+min-height: 100vh;
+display: flex; flex-direction: column;
+}
+
+/* ── HEADER ────────────────────────────────────────────── */
+header {
+text-align: center;
+padding: 2.5rem 1rem 1.5rem;
+position: relative;
+}
+.logo-wrap {
+display: inline-block;
+position: relative;
+}
+.logo-glow {
+position: absolute; inset: -20px;
+background: radial-gradient(ellipse, rgba(245,200,66,0.18) 0%, transparent 70%);
+border-radius: 50%;
+animation: pulseGlow 3s ease-in-out infinite;
+}
+@keyframes pulseGlow {
+0%,100% { opacity:0.6; transform: scale(1); }
+50%      { opacity:1;   transform: scale(1.1); }
+}
+h1.title {
+font-family: ‘Cinzel Decorative’, serif;
+font-size: clamp(1.8rem, 5vw, 3.2rem);
+font-weight: 900;
+background: linear-gradient(135deg, #f5c842 0%, #fff8e1 40%, #f5c842 70%, #e8a020 100%);
+-webkit-background-clip: text; -webkit-text-fill-color: transparent;
+background-clip: text;
+letter-spacing: 0.05em;
+filter: drop-shadow(0 0 20px rgba(245,200,66,0.4));
+}
+.subtitle {
+font-family: ‘Cinzel’, serif;
+font-size: 0.85rem;
+color: var(–silver);
+letter-spacing: 0.3em;
+text-transform: uppercase;
+margin-top: 0.4rem;
+opacity: 0.8;
+}
+.quill-icon { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; animation: float 4s ease-in-out infinite; }
+@keyframes float { 0%,100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
+
+/* ── NAV ───────────────────────────────────────────────── */
+nav {
+display: flex;
+justify-content: center;
+gap: 0.5rem;
+padding: 0.5rem 1rem 1.5rem;
+flex-wrap: wrap;
+}
+.nav-btn {
+font-family: ‘Cinzel’, serif;
+font-size: 0.78rem;
+font-weight: 600;
+letter-spacing: 0.1em;
+padding: 0.6rem 1.2rem;
+border: 1.5px solid rgba(245,200,66,0.3);
+background: rgba(255,255,255,0.03);
+color: var(–silver);
+border-radius: 50px;
+cursor: pointer;
+transition: all 0.3s;
+display: flex; align-items: center; gap: 0.4rem;
+}
+.nav-btn:hover {
+border-color: var(–gold);
+color: var(–gold);
+background: rgba(245,200,66,0.08);
+transform: translateY(-2px);
+box-shadow: 0 4px 20px rgba(245,200,66,0.2);
+}
+.nav-btn.active {
+background: linear-gradient(135deg, rgba(245,200,66,0.2), rgba(232,160,32,0.15));
+border-color: var(–gold);
+color: var(–gold);
+box-shadow: 0 0 20px rgba(245,200,66,0.25), inset 0 0 10px rgba(245,200,66,0.05);
+}
+
+/* ── MAIN CONTENT ──────────────────────────────────────── */
+main {
+flex:1;
+max-width: 900px;
+width: 100%;
+margin: 0 auto;
+padding: 0 1rem 3rem;
+}
+
+/* ── PANELS ────────────────────────────────────────────── */
+.panel { display:none; animation: fadeIn 0.4s ease; }
+.panel.active { display:block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── GLASS CARD ────────────────────────────────────────── */
+.glass {
+background: linear-gradient(135deg, rgba(30,42,110,0.5), rgba(13,17,53,0.7));
+border: 1px solid rgba(245,200,66,0.15);
+border-radius: 20px;
+padding: 2rem;
+backdrop-filter: blur(10px);
+box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+margin-bottom: 1.5rem;
+}
+.glass:hover { border-color: rgba(245,200,66,0.25); }
+
+/* ── SECTION TITLES ────────────────────────────────────── */
+.section-title {
+font-family: ‘Cinzel Decorative’, serif;
+font-size: 1.3rem;
+color: var(–gold);
+margin-bottom: 0.4rem;
+display: flex; align-items: center; gap: 0.6rem;
+}
+.section-sub {
+font-size: 0.85rem;
+color: var(–silver);
+margin-bottom: 1.5rem;
+opacity: 0.8;
+}
+
+/* ── BUTTONS ───────────────────────────────────────────── */
+.btn {
+font-family: ‘Cinzel’, serif;
+font-size: 0.85rem;
+font-weight: 700;
+letter-spacing: 0.1em;
+padding: 0.75rem 1.8rem;
+border-radius: 50px;
+border: none;
+cursor: pointer;
+transition: all 0.25s;
+display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.btn-gold {
+background: linear-gradient(135deg, var(–gold), var(–gold2));
+color: var(–midnight);
+box-shadow: 0 4px 20px rgba(245,200,66,0.35);
+}
+.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,200,66,0.5); filter: brightness(1.1); }
+.btn-outline {
+background: transparent;
+border: 1.5px solid rgba(245,200,66,0.4);
+color: var(–gold);
+}
+.btn-outline:hover { background: rgba(245,200,66,0.1); border-color: var(–gold); transform: translateY(-2px); }
+.btn-ghost {
+background: rgba(255,255,255,0.06);
+color: var(–silver);
+border: 1px solid rgba(255,255,255,0.1);
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.1); color: var(–cream); }
+
+/* ── INPUTS ────────────────────────────────────────────── */
+input[type=text], textarea, select {
+width: 100%;
+background: rgba(255,255,255,0.04);
+border: 1.5px solid rgba(245,200,66,0.2);
+border-radius: 12px;
+color: var(–cream);
+font-family: ‘Nunito’, sans-serif;
+font-size: 1rem;
+padding: 0.8rem 1rem;
+outline: none;
+transition: border-color 0.25s, box-shadow 0.25s;
+}
+input[type=text]:focus, textarea:focus, select:focus {
+border-color: var(–gold);
+box-shadow: 0 0 0 3px rgba(245,200,66,0.1);
+}
+select option { background: var(–deep); color: var(–cream); }
+textarea { resize: vertical; min-height: 80px; }
+
+/* ────────────────────────────────────────────────────────
+MODE 1: STORY FORGE
+─────────────────────────────────────────────────────────*/
+.theme-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 0.75rem;
+margin: 1rem 0;
+}
+@media(max-width:500px) { .theme-grid { grid-template-columns: 1fr 1fr; } }
+
+.theme-card {
+border: 1.5px solid rgba(255,255,255,0.08);
+border-radius: 14px;
+padding: 1rem;
+cursor: pointer;
+text-align: center;
+transition: all 0.25s;
+background: rgba(255,255,255,0.02);
+}
+.theme-card:hover { border-color: var(–gold); transform: translateY(-3px); background: rgba(245,200,66,0.06); }
+.theme-card.selected { border-color: var(–gold); background: rgba(245,200,66,0.12); box-shadow: 0 0 20px rgba(245,200,66,0.2); }
+.theme-card .emoji { font-size: 2rem; display:block; margin-bottom:0.4rem; }
+.theme-card .name { font-family:‘Cinzel’,serif; font-size:0.75rem; letter-spacing:0.1em; color:var(–gold); }
+.theme-card .desc { font-size: 0.72rem; color: var(–silver); margin-top:0.2rem; opacity:0.7; }
+
+.keywords-grid {
+display: flex; flex-wrap: wrap; gap: 0.5rem;
+margin: 0.75rem 0;
+}
+.keyword-chip {
+padding: 0.35rem 0.9rem;
+border-radius: 50px;
+background: rgba(74,63,143,0.4);
+border: 1px solid rgba(122,94,167,0.5);
+font-size: 0.8rem;
+color: #c4b5fd;
+cursor: pointer;
+transition: all 0.2s;
+}
+.keyword-chip:hover { background: rgba(74,63,143,0.7); border-color: #c4b5fd; }
+.keyword-chip.active { background: rgba(74,63,143,0.9); border-color: #c4b5fd; color: white; }
+
+#story-output {
+display:none;
+margin-top: 1.5rem;
+}
+.story-text {
+font-family: ‘Lora’, serif;
+font-size: 1.05rem;
+line-height: 1.9;
+color: var(–cream);
+}
+.story-title-display {
+font-family: ‘Cinzel Decorative’, serif;
+font-size: 1.3rem;
+color: var(–gold);
+text-align: center;
+margin-bottom: 1.2rem;
+text-shadow: 0 0 20px rgba(245,200,66,0.4);
+}
+.story-text p { margin-bottom: 1rem; }
+
+/* generating animation */
+.generating {
+display:flex; align-items:center; justify-content:center;
+gap: 0.8rem; padding: 2rem;
+font-family: ‘Cinzel’, serif; color: var(–gold); font-size:0.9rem; letter-spacing:0.1em;
+}
+.gen-dots span {
+display:inline-block; width:8px; height:8px;
+border-radius:50%; background:var(–gold);
+animation: bounce 1.2s infinite ease-in-out;
+}
+.gen-dots span:nth-child(2) { animation-delay:0.2s; }
+.gen-dots span:nth-child(3) { animation-delay:0.4s; }
+@keyframes bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
+
+/* ────────────────────────────────────────────────────────
+MODE 2: STORY LIBRARY
+─────────────────────────────────────────────────────────*/
+.story-cards {
+display: grid; grid-template-columns: 1fr; gap: 1rem;
+}
+.story-card {
+border: 1px solid rgba(245,200,66,0.12);
+border-radius: 16px;
+padding: 1.3rem 1.5rem;
+cursor: pointer;
+transition: all 0.25s;
+background: rgba(255,255,255,0.02);
+display: flex; align-items: center; gap: 1rem;
+}
+.story-card:hover { border-color: rgba(245,200,66,0.4); background: rgba(245,200,66,0.04); transform: translateX(6px); }
+.story-card .sc-icon { font-size: 2.5rem; flex-shrink:0; }
+.story-card .sc-info .sc-title { font-family:‘Cinzel’,serif; font-size:1rem; color:var(–cream); margin-bottom:0.3rem; }
+.story-card .sc-info .sc-desc { font-size:0.82rem; color:var(–silver); opacity:0.8; }
+.diff-badge {
+padding: 0.2rem 0.6rem; border-radius:50px; font-size:0.7rem; font-weight:700;
+margin-left: auto; flex-shrink:0;
+}
+.diff-easy   { background:rgba(46,216,195,0.2); color:#2ed8c3; border:1px solid rgba(46,216,195,0.3); }
+.diff-medium { background:rgba(245,200,66,0.2); color:var(–gold); border:1px solid rgba(245,200,66,0.3); }
+.diff-hard   { background:rgba(232,93,138,0.2); color:var(–rose); border:1px solid rgba(232,93,138,0.3); }
+
+#story-reader { display:none; }
+.reader-title { font-family:‘Cinzel Decorative’,serif; font-size:1.4rem; color:var(–gold); text-align:center; margin-bottom:1.5rem; }
+.reader-text { font-family:‘Lora’,serif; font-size:1.05rem; line-height:1.9; color:var(–cream); }
+.reader-text p { margin-bottom:1rem; }
+
+/* progress bar */
+.reading-progress {
+height: 4px; background: rgba(255,255,255,0.08);
+border-radius: 50px; margin-bottom: 1.5rem; overflow:hidden;
+}
+.reading-bar {
+height:100%; background:linear-gradient(90deg,var(–gold),var(–rose));
+border-radius:50px; transition: width 1s;
+width: 0%;
+}
+
+/* ────────────────────────────────────────────────────────
+MODE 3: WORD HUNT
+─────────────────────────────────────────────────────────*/
+#game-start, #game-play { }
+#game-play { display:none; }
+
+.category-select {
+display: grid; grid-template-columns: repeat(3,1fr); gap:0.75rem; margin: 1rem 0;
+}
+@media(max-width:500px) { .category-select { grid-template-columns:1fr 1fr; } }
+.cat-btn {
+padding: 0.8rem;
+border: 1.5px solid rgba(255,255,255,0.1);
+border-radius:12px;
+background:rgba(255,255,255,0.03);
+color:var(–silver);
+cursor:pointer;
+text-align:center;
+transition:all 0.2s;
+font-size:0.85rem;
+}
+.cat-btn .cat-emoji { font-size:1.5rem; display:block; margin-bottom:0.3rem; }
+.cat-btn:hover, .cat-btn.selected { border-color:var(–gold); background:rgba(245,200,66,0.1); color:var(–gold); }
+
+.word-grid-wrap {
+overflow-x: auto;
+margin: 1rem 0;
+}
+#word-grid {
+display: grid;
+gap: 3px;
+margin: 0 auto;
+}
+.grid-cell {
+width: 32px; height: 32px;
+display:flex; align-items:center; justify-content:center;
+font-family:‘Cinzel’,serif; font-size:0.85rem; font-weight:700;
+border: 1px solid rgba(245,200,66,0.1);
+border-radius: 6px;
+background: rgba(255,255,255,0.03);
+cursor:pointer;
+transition:all 0.15s;
+user-select:none;
+color:var(–silver);
+}
+.grid-cell:hover { background:rgba(245,200,66,0.1); border-color:rgba(245,200,66,0.3); color:var(–gold); }
+.grid-cell.selected { background:rgba(245,200,66,0.25); border-color:var(–gold); color:var(–cream); }
+.grid-cell.found { background:rgba(46,216,195,0.2); border-color:#2ed8c3; color:#2ed8c3; }
+
+.word-bank {
+display:flex; flex-wrap:wrap; gap:0.5rem; margin:1rem 0;
+}
+.word-tag {
+padding:0.3rem 0.8rem; border-radius:50px;
+font-family:‘Cinzel’,serif; font-size:0.75rem; font-weight:600;
+background:rgba(74,63,143,0.4); border:1px solid rgba(122,94,167,0.4);
+color:#c4b5fd;
+transition:all 0.3s;
+}
+.word-tag.found-word {
+background:rgba(46,216,195,0.2); border-color:#2ed8c3; color:#2ed8c3;
+text-decoration:line-through; opacity:0.7;
+}
+
+.score-display {
+display:flex; align-items:center; justify-content:space-between;
+padding:0.75rem 1rem;
+background:rgba(255,255,255,0.03); border-radius:12px;
+margin-bottom:1rem;
+font-family:‘Cinzel’,serif; font-size:0.85rem;
+}
+.score-num { color:var(–gold); font-size:1.3rem; font-weight:700; }
+
+/* ────────────────────────────────────────────────────────
+MODE 4: DRAWING STUDIO
+─────────────────────────────────────────────────────────*/
+.canvas-wrap {
+border: 2px solid rgba(245,200,66,0.2);
+border-radius: 16px;
+overflow:hidden;
+position:relative;
+background: #fff;
+cursor: crosshair;
+}
+#draw-canvas { display:block; touch-action:none; width:100%; }
+
+.draw-tools {
+display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;
+margin: 1rem 0;
+}
+.color-btn {
+width:30px; height:30px; border-radius:50%;
+border: 2px solid rgba(255,255,255,0.2);
+cursor:pointer; transition:all 0.2s; flex-shrink:0;
+}
+.color-btn:hover { transform:scale(1.2); border-color:white; }
+.color-btn.active { border-color:white; transform:scale(1.3); box-shadow:0 0 10px rgba(255,255,255,0.5); }
+
+.tool-divider { width:1px; height:28px; background:rgba(255,255,255,0.15); }
+
+.size-slider {
+-webkit-appearance:none;
+width: 80px; height:4px;
+border-radius:50px; background:rgba(255,255,255,0.2);
+outline:none; cursor:pointer;
+}
+.size-slider::-webkit-slider-thumb {
+-webkit-appearance:none; width:16px; height:16px;
+border-radius:50%; background:var(–gold); cursor:pointer;
+box-shadow:0 0 6px rgba(245,200,66,0.5);
+}
+
+/* win screen */
+.win-screen {
+text-align:center; padding:2rem;
+display:none;
+}
+.win-screen.show { display:block; animation:fadeIn 0.5s ease; }
+.win-stars { font-size:3rem; animation:bounce2 0.5s ease; }
+@keyframes bounce2 { 0%{transform:scale(0)} 70%{transform:scale(1.3)} 100%{transform:scale(1)} }
+.win-title { font-family:‘Cinzel Decorative’,serif; font-size:1.8rem; color:var(–gold); margin:0.5rem 0; }
+
+/* ── MOBILE ────────────────────────────────────────────── */
+@media(max-width:600px) {
+header { padding: 1.5rem 1rem 1rem; }
+.glass { padding: 1.3rem; }
+.grid-cell { width:27px; height:27px; font-size:0.72rem; }
+}
+</style>
+
+</head>
+<body>
+
+<div id="stars"></div>
+
+<div id="app">
+  <header>
+    <div class="logo-wrap">
+      <div class="logo-glow"></div>
+      <span class="quill-icon">🪄</span>
+      <h1 class="title">The Wizard's Quill</h1>
+      <div class="subtitle">✦ A Magical Reading &amp; Writing Adventure ✦</div>
+    </div>
+  </header>
+
+  <nav>
+    <button class="nav-btn active" onclick="showPanel('forge')" id="nav-forge">✍️ Story Forge</button>
+    <button class="nav-btn" onclick="showPanel('library')" id="nav-library">📚 Story Library</button>
+    <button class="nav-btn" onclick="showPanel('hunt')" id="nav-hunt">🔍 Word Hunt</button>
+    <button class="nav-btn" onclick="showPanel('draw')" id="nav-draw">🎨 Magic Canvas</button>
+  </nav>
+
+  <main>
+
+```
+<!-- ══════════════════════════════════════════
+     PANEL 1: STORY FORGE
+═══════════════════════════════════════════ -->
+<div class="panel active" id="panel-forge">
+  <div class="glass">
+    <div class="section-title">✨ Story Forge</div>
+    <div class="section-sub">Choose your adventure, sprinkle in some magic words, and forge your story!</div>
+
+    <div class="theme-grid">
+      <div class="theme-card" onclick="selectTheme('adventure')" id="theme-adventure">
+        <span class="emoji">⚔️</span>
+        <div class="name">ADVENTURE</div>
+        <div class="desc">Brave heroes &amp; epic quests</div>
+      </div>
+      <div class="theme-card" onclick="selectTheme('mystery')" id="theme-mystery">
+        <span class="emoji">🔮</span>
+        <div class="name">MYSTERY</div>
+        <div class="desc">Secrets &amp; hidden clues</div>
+      </div>
+      <div class="theme-card" onclick="selectTheme('fantasy')" id="theme-fantasy">
+        <span class="emoji">🐉</span>
+        <div class="name">FANTASY</div>
+        <div class="desc">Dragons, magic &amp; wonder</div>
+      </div>
+      <div class="theme-card selected" onclick="selectTheme('friendship')" id="theme-friendship">
+        <span class="emoji">🌟</span>
+        <div class="name">FRIENDSHIP</div>
+        <div class="desc">Kindness &amp; loyal hearts</div>
+      </div>
+    </div>
+
+    <label style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--silver);display:block;margin-bottom:0.5rem;">HERO'S NAME</label>
+    <input type="text" id="hero-name" placeholder="Enter your hero's name..." maxlength="20">
+
+    <label style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--silver);display:block;margin:1rem 0 0.5rem;">MAGIC WORDS <span style="font-size:0.7rem;opacity:0.6">(click to add)</span></label>
+    <div class="keywords-grid" id="keyword-chips">
+      <div class="keyword-chip" onclick="toggleKeyword(this,'dragon')">🐉 dragon</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'castle')">🏰 castle</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'treasure')">💎 treasure</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'forest')">🌲 forest</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'potion')">🧪 potion</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'wizard')">🧙 wizard</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'ocean')">🌊 ocean</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'moonlight')">🌙 moonlight</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'phoenix')">🔥 phoenix</div>
+      <div class="keyword-chip" onclick="toggleKeyword(this,'crystal')">💠 crystal</div>
+    </div>
+
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.5rem;">
+      <button class="btn btn-gold" onclick="forgeStory()">🪄 Forge My Story!</button>
+      <button class="btn btn-ghost" onclick="clearForge()">✕ Clear</button>
+    </div>
+  </div>
+
+  <div id="story-output" class="glass">
+    <div id="story-generating" class="generating" style="display:none;">
+      <span>⚗️ Brewing your story</span>
+      <div class="gen-dots"><span></span><span></span><span></span></div>
+    </div>
+    <div id="story-result" style="display:none;">
+      <div id="story-title-out" class="story-title-display"></div>
+      <div id="story-text-out" class="story-text"></div>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.5rem;">
+        <button class="btn btn-gold" onclick="forgeStory()">🔄 Forge Another!</button>
+        <button class="btn btn-outline" onclick="copyStory()">📋 Copy Story</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 2: STORY LIBRARY
+═══════════════════════════════════════════ -->
+<div class="panel" id="panel-library">
+  <div class="glass" id="story-list-view">
+    <div class="section-title">📚 Story Library</div>
+    <div class="section-sub">Choose a magical tale to explore — and find all the hidden words!</div>
+
+    <div class="story-cards" id="story-cards-list"></div>
+  </div>
+
+  <div id="story-reader" class="glass">
+    <div class="reading-progress"><div class="reading-bar" id="reading-bar"></div></div>
+    <button class="btn btn-ghost" onclick="closeReader()" style="margin-bottom:1.2rem;">← Back to Library</button>
+    <div class="reader-title" id="reader-title"></div>
+    <div class="reader-text" id="reader-body"></div>
+    <div style="margin-top:1.5rem;">
+      <div style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--gold);margin-bottom:0.5rem;">WORD TARGETS</div>
+      <div class="word-bank" id="reader-words"></div>
+      <div style="margin-top:1rem;font-size:0.9rem;color:var(--silver)" id="reader-score-txt"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 3: WORD HUNT
+═══════════════════════════════════════════ -->
+<div class="panel" id="panel-hunt">
+  <div class="glass" id="game-start">
+    <div class="section-title">🔍 Word Hunt</div>
+    <div class="section-sub">Find all the hidden words in the magical grid!</div>
+
+    <label style="font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--silver);display:block;margin-bottom:0.75rem;">CHOOSE YOUR QUEST</label>
+    <div class="category-select" id="cat-select">
+      <div class="cat-btn selected" onclick="selectCat(this,'magic')"><span class="cat-emoji">🧙</span>Magic</div>
+      <div class="cat-btn" onclick="selectCat(this,'animals')"><span class="cat-emoji">🦄</span>Animals</div>
+      <div class="cat-btn" onclick="selectCat(this,'nature')"><span class="cat-emoji">🌿</span>Nature</div>
+      <div class="cat-btn" onclick="selectCat(this,'ocean')"><span class="cat-emoji">🌊</span>Ocean</div>
+      <div class="cat-btn" onclick="selectCat(this,'space')"><span class="cat-emoji">🚀</span>Space</div>
+      <div class="cat-btn" onclick="selectCat(this,'food')"><span class="cat-emoji">🍕</span>Food</div>
+    </div>
+
+    <button class="btn btn-gold" onclick="startWordHunt()" style="margin-top:1.5rem;">🔍 Start Hunt!</button>
+  </div>
+
+  <div class="glass" id="game-play" style="display:none;">
+    <div class="score-display">
+      <div>
+        <div style="font-size:0.7rem;letter-spacing:0.1em;color:var(--silver);margin-bottom:0.2rem;">SCORE</div>
+        <div class="score-num" id="score-num">0</div>
+      </div>
+      <div id="game-title-disp" style="font-family:'Cinzel',serif;font-size:0.9rem;color:var(--gold)"></div>
+      <button class="btn btn-ghost" onclick="quitGame()" style="padding:0.4rem 1rem;font-size:0.75rem;">✕ Quit</button>
+    </div>
+
+    <div class="word-bank" id="hunt-word-bank"></div>
+
+    <div class="word-grid-wrap">
+      <div id="word-grid"></div>
+    </div>
+
+    <div id="selection-hint" style="min-height:1.5rem;margin-top:0.5rem;font-size:0.85rem;color:var(--silver);font-style:italic;"></div>
+  </div>
+
+  <div class="glass win-screen" id="win-screen">
+    <div class="win-stars">⭐⭐⭐</div>
+    <div class="win-title">Quest Complete!</div>
+    <p style="color:var(--silver);margin:0.5rem 0 1.5rem;font-size:0.95rem;">You found all the hidden words!</p>
+    <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+      <button class="btn btn-gold" onclick="playAgain()">🔄 New Quest</button>
+      <button class="btn btn-ghost" onclick="quitGame()">📋 Change Quest</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 4: MAGIC CANVAS
+═══════════════════════════════════════════ -->
+<div class="panel" id="panel-draw">
+  <div class="glass">
+    <div class="section-title">🎨 Magic Canvas</div>
+    <div class="section-sub">Draw your magical world! Every stroke is a spell.</div>
+
+    <div class="draw-tools" id="draw-tools">
+      <div id="color-btns"></div>
+      <div class="tool-divider"></div>
+      <span style="font-size:0.75rem;color:var(--silver);">Size</span>
+      <input type="range" class="size-slider" id="brush-size" min="2" max="40" value="8" oninput="setBrushSize(this.value)">
+      <div class="tool-divider"></div>
+      <button class="btn btn-ghost" onclick="setEraser()" id="eraser-btn" style="padding:0.4rem 0.8rem;font-size:0.85rem;">🧹 Eraser</button>
+      <button class="btn btn-ghost" onclick="clearCanvas()" style="padding:0.4rem 0.8rem;font-size:0.85rem;">🗑️ Clear</button>
+      <button class="btn btn-outline" onclick="saveCanvas()" style="padding:0.4rem 0.8rem;font-size:0.8rem;margin-left:auto;">💾 Save</button>
+    </div>
+
+    <div class="canvas-wrap" id="canvas-wrap">
+      <canvas id="draw-canvas"></canvas>
+    </div>
+
+    <div style="margin-top:0.75rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+      <span style="font-size:0.8rem;color:var(--silver);">Quick stamps:</span>
+      <button class="btn btn-ghost" onclick="stampEmoji('⭐')" style="padding:0.3rem 0.6rem;font-size:1rem;">⭐</button>
+      <button class="btn btn-ghost" onclick="stampEmoji('🌙')" style="padding:0.3rem 0.6rem;font-size:1rem;">🌙</button>
+      <button class="btn btn-ghost" onclick="stampEmoji('🐉')" style="padding:0.3rem 0.6rem;font-size:1rem;">🐉</button>
+      <button class="btn btn-ghost" onclick="stampEmoji('🌸')" style="padding:0.3rem 0.6rem;font-size:1rem;">🌸</button>
+      <button class="btn btn-ghost" onclick="stampEmoji('✨')" style="padding:0.3rem 0.6rem;font-size:1rem;">✨</button>
+      <button class="btn btn-ghost" onclick="stampEmoji('🦋')" style="padding:0.3rem 0.6rem;font-size:1rem;">🦋</button>
+      <button class="btn btn-ghost" onclick="stampEmoji('🌈')" style="padding:0.3rem 0.6rem;font-size:1rem;">🌈</button>
+      <button class="btn btn-ghost" onclick="stampEmoji('🏰')" style="padding:0.3rem 0.6rem;font-size:1rem;">🏰</button>
+    </div>
+  </div>
+</div>
+```
+
+  </main>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// STARFIELD
+// ════════════════════════════════════════════════════════
+(function createStars(){
+  const c=document.getElementById('stars');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div'); s.className='star';
+    const size=Math.random()*2.5+0.5;
+    s.style.cssText=`
+      left:${Math.random()*100}%;top:${Math.random()*100}%;
+      width:${size}px;height:${size}px;
+      --d:${2+Math.random()*4}s;
+      --delay:${Math.random()*4}s;
+      --min-op:${0.1+Math.random()*0.2};
+      --max-op:${0.6+Math.random()*0.4};
+    `;
+    c.appendChild(s);
+  }
+})();
+
+// ════════════════════════════════════════════════════════
+// PARTICLES
+// ════════════════════════════════════════════════════════
+function spawnParticles(x,y,count=5){
+  const emojis=['✨','⭐','💫','🌟','✦','·'];
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    p.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    p.style.left=(x+Math.random()*60-30)+'px';
+    p.style.top=(y+Math.random()*40-20)+'px';
+    p.style.animationDelay=(Math.random()*0.3)+'s';
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),2000);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════
+function showPanel(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  const btn=document.getElementById('nav-'+name);
+  const r=btn.getBoundingClientRect();
+  spawnParticles(r.left+r.width/2, r.top+r.height/2, 4);
+}
+
+// ════════════════════════════════════════════════════════
+// MODE 1: STORY FORGE
+// ════════════════════════════════════════════════════════
+let selectedTheme='friendship';
+let selectedKeywords=[];
+
+function selectTheme(t){
+  document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('theme-'+t).classList.add('selected');
+  selectedTheme=t;
+}
+
+function toggleKeyword(el,kw){
+  el.classList.toggle('active');
+  if(selectedKeywords.includes(kw)){
+    selectedKeywords=selectedKeywords.filter(k=>k!==kw);
+  } else {
+    selectedKeywords.push(kw);
+  }
+}
+
+function clearForge(){
+  selectedKeywords=[];
+  document.querySelectorAll('.keyword-chip').forEach(c=>c.classList.remove('active'));
+  document.getElementById('hero-name').value='';
+  document.getElementById('story-output').style.display='none';
+}
+
+const STORIES={
+  adventure:{
+    titles:["The Quest for the Golden Compass","A Hero's Impossible Journey","The Champion of the Fallen Kingdom"],
+    openings:[
+      "The sun had barely risen when {hero} strapped on their worn leather boots and stepped out into the cool morning air.",
+      "Nobody in the village believed {hero} could do it. They said the quest was impossible. They were wrong.",
+      "For {hero}, adventure began the moment they found the mysterious map hidden beneath the old oak tree.",
+    ],
+    middles:[
+      "Deep in the {kw1} where ancient magic still whispered through the leaves, {hero} encountered a challenge that would test every ounce of their courage.",
+      "The path led straight to the heart of the {kw1}, where the legendary {kw2} waited — guarded by trials no ordinary soul could survive.",
+      "With only a {kw2} and a fierce determination, {hero} pressed forward into the unknown shadows of the {kw1}.",
+    ],
+    endings:[
+      "By the time {hero} returned home, the stars were blazing overhead — and the {kw3} gleamed in their hands, proof that even impossible dreams can come true.",
+      "The village cheered when {hero} emerged from the {kw1} victorious. The legend of their courage would be told for a thousand years.",
+      "As {hero} sat beneath the {kw3} sky that night, they knew that every hardship had been worth it. True heroes are not born — they are forged.",
+    ]
+  },
+  mystery:{
+    titles:["The Disappearing Star","The Secret of the Hollow Tower","Shadows in the Enchanted Fog"],
+    openings:[
+      "Something was very wrong in the kingdom. {hero} could feel it from the moment they woke to find the {kw1} had vanished.",
+      "It began with a single clue: a note slipped under {hero}'s door reading 'Find the truth before midnight.'",
+      "Everyone in town had a theory. Only {hero} had the sharp eyes to notice what others had missed — the {kw1} was not where it should be.",
+    ],
+    middles:[
+      "Every clue led deeper into the mystery: the glowing {kw2}, the locked gate with no key, the strange figure cloaked in {kw3}.",
+      "{hero} followed the trail of evidence through the shadowy corridors, piecing together the puzzle that involved a stolen {kw2} and a very suspicious {kw3}.",
+      "The mystery deepened when {hero} discovered that the {kw2} left behind at every scene was not accidental — it was a message meant only for them.",
+    ],
+    endings:[
+      "As the clock struck midnight, {hero} revealed the solution — stunning everyone who had doubted them. The {kw3} was returned and the mystery finally put to rest.",
+      "The truth was more surprising than anything {hero} had imagined. But with clever thinking and a courageous heart, justice prevailed.",
+      "With the mystery solved and the culprit caught, {hero} smiled quietly to themselves. The greatest adventures, they had learned, often began with a single question.",
+    ]
+  },
+  fantasy:{
+    titles:["The Last Spell of the Ancient Realm","Rider of the Starborn Dragon","The Kingdom Between Two Moons"],
+    openings:[
+      "In a world where the {kw1} sang ancient magic at dawn, there lived a young soul named {hero} who dared to dream of flying.",
+      "{hero} had always known they were different. The {kw1} bloomed wherever they walked and animals whispered secrets only they could hear.",
+      "The prophecy was clear: when the {kw1} turns to starlight, the chosen one will rise. That chosen one was {hero}.",
+    ],
+    middles:[
+      "The great {kw2} descended from the clouds, breathing {kw3} as gently as a summer breeze — and chose {hero} as its companion.",
+      "Armed with only their wits and a {kw2} imbued with ancient {kw3}, {hero} crossed three enchanted kingdoms to reach the Realm of Starlight.",
+      "The {kw2} temple had been sealed for a thousand years. {hero} alone possessed the gift to open it — a heart full of kindness and a soul bright as {kw3}.",
+    ],
+    endings:[
+      "As the magic settled and the world was restored to balance, {hero} stood at the peak of the Crystal Mountain — the greatest mage the realm had ever known.",
+      "The land healed, the darkness retreated, and the {kw3} shone once more over a kingdom at peace. {hero} had saved them all.",
+      "They say that to this day, if you walk through an enchanted {kw2} forest on a moonlit night, you can still hear the echo of {hero}'s legendary spell.",
+    ]
+  },
+  friendship:{
+    titles:["The Bond That Moved Mountains","A Friend for Every Season","When Stars Choose Their Companions"],
+    openings:[
+      "{hero} never expected to find a best friend in the most unlikely place — curled up beneath the old {kw1} at the edge of the meadow.",
+      "On the first day in a strange new town, {hero} felt completely alone. Then came the moment that changed everything: a smile from a stranger near the {kw1}.",
+      "True friendship, {hero} would learn, often arrives when you least expect it — disguised as a {kw1} and a tiny bit of magic.",
+    ],
+    middles:[
+      "Together, {hero} and their new companion braved the towering {kw2} and discovered the secret of the glowing {kw3} that lit up the whole valley.",
+      "The journey was never meant to be traveled alone. With their friend at their side, {hero} found the courage to face the roaring {kw2} and the mystery of the lost {kw3}.",
+      "They built a hideaway near the {kw2}, decorated it with {kw3}, and made a promise that no distance or difficulty would ever break their bond.",
+    ],
+    endings:[
+      "Years later, {hero} would say that the greatest magic they ever discovered had nothing to do with spells or potions. It was the simple miracle of a true friend.",
+      "The adventure ended where it began — under the stars — with {hero} and their friend side by side, knowing that together they could face anything.",
+      "Some journeys change the whole world. Others just change you. This one, for {hero}, changed everything that mattered most.",
+    ]
+  }
+};
+
+function pickRand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function forgeStory(){
+  const heroRaw=document.getElementById('hero-name').value.trim();
+  const hero = heroRaw || pickRand(['Ember','Finn','Luna','Zara','Kai','Mira','Atlas','Sage']);
+  const kws=[...selectedKeywords];
+  while(kws.length<5) kws.push(pickRand(['dragon','castle','moonlight','crystal','forest','potion','wizard','ocean','phoenix','treasure']));
+
+  const theme=STORIES[selectedTheme];
+  const title=pickRand(theme.titles);
+
+  let opening=pickRand(theme.openings);
+  let middle=pickRand(theme.middles);
+  let ending=pickRand(theme.endings);
+
+  const replace=(s)=>s
+    .replace(/{hero}/g,hero)
+    .replace(/{kw1}/g,kws[0])
+    .replace(/{kw2}/g,kws[1]||kws[0])
+    .replace(/{kw3}/g,kws[2]||kws[1]||kws[0]);
+
+  opening=replace(opening);
+  middle=replace(middle);
+  ending=replace(ending);
+
+  const output=document.getElementById('story-output');
+  const generating=document.getElementById('story-generating');
+  const result=document.getElementById('story-result');
+
+  output.style.display='block';
+  generating.style.display='flex';
+  result.style.display='none';
+  output.scrollIntoView({behavior:'smooth',block:'start'});
+
+  setTimeout(()=>{
+    generating.style.display='none';
+    document.getElementById('story-title-out').textContent=title;
+    document.getElementById('story-text-out').innerHTML=
+      `<p>${opening}</p><p>${middle}</p><p>${ending}</p>`;
+    result.style.display='block';
+    spawnParticles(window.innerWidth/2, 200, 12);
+  }, 1600);
+}
+
+function copyStory(){
+  const title=document.getElementById('story-title-out').textContent;
+  const text=document.getElementById('story-text-out').innerText;
+  navigator.clipboard.writeText(title+'\n\n'+text).then(()=>{
+    const btn=event.target; const orig=btn.innerHTML;
+    btn.innerHTML='✅ Copied!'; btn.disabled=true;
+    setTimeout(()=>{btn.innerHTML=orig;btn.disabled=false;},2000);
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// MODE 2: STORY LIBRARY
+// ════════════════════════════════════════════════════════
+const LIBRARY=[
+  {
+    id:0, icon:'🏔️', title:'The Mountain of a Thousand Steps',
+    desc:'A brave climber faces three impossible challenges to reach the summit.',
+    diff:'medium',
+    words:['BRAVE','SUMMIT','CLIMB','CLOUD','WIND','STONE','PATH','HEART','PEAK','DREAM'],
+    text:`<p>Everyone in the village said the Mountain of a Thousand Steps could not be climbed. They said it was too tall, too cold, and too dangerous for a single person to summit alone.</p>
+    <p>But Zara had dreamed of reaching the peak since she was five years old. She packed her bag with a warm coat, three apples, and an unbreakable belief in herself.</p>
+    <p>The first challenge came early — a howling wind so strong it nearly knocked her off the path. She leaned into it, one step at a time, until it passed.</p>
+    <p>The second challenge was a field of loose stones that shifted and slid with every step. She moved slowly, testing each foothold, never rushing, never giving up.</p>
+    <p>The third challenge was the hardest: the voice inside her own head that whispered "turn back." She listened to it for a moment. Then she smiled, and climbed on.</p>
+    <p>When she finally broke through the clouds and stood on the peak, the whole world stretched below her in golden light. She had done it. Not because the mountain was easy — but because she was brave enough not to stop.</p>`
+  },
+  {
+    id:1, icon:'🌊', title:'The Girl Who Talked to Whales',
+    desc:'Deep beneath the ocean, a girl discovers a language older than words.',
+    diff:'easy',
+    words:['WHALE','OCEAN','SONG','DEEP','TIDE','CORAL','LIGHT','WAVE','SWIM','MAGIC'],
+    text:`<p>Maya discovered she could understand whale songs on the morning of her eighth birthday, when a soft blue light shimmered under the dock and a sound like music filled her whole body.</p>
+    <p>At first she thought she was imagining it. But the song had words: "Come closer. Do not be afraid."</p>
+    <p>She waded in up to her waist. Then her shoulders. Then, with the tide pulling her gently, she dipped her face beneath the surface — and saw a great blue whale the size of a school bus, one ancient eye watching her with tremendous kindness.</p>
+    <p>They spent all summer together. Maya would sit on the dock at dawn and listen, and the whale would sing the deep stories of the ocean — of coral gardens older than any kingdom, of currents that circled the whole world, of light that reached impossible depths.</p>
+    <p>When autumn came and it was time for the whale to swim south, Maya sang back for the first time — a melody of her own. The whale paused, rolled one great eye toward her, and replied: "Every ocean knows your song now."</p>
+    <p>Maya smiled all the way home.</p>`
+  },
+  {
+    id:2, icon:'🧙', title:'The Apprentice Who Forgot the Rules',
+    desc:'What happens when a young wizard ignores every single warning?',
+    diff:'hard',
+    words:['SPELL','WIZARD','WAND','CAULDRON','MAGIC','RUNES','SCROLL','POTION','SPARK','ANCIENT'],
+    text:`<p>The very first rule of the Wizard's Academy was written in ancient runes above the entrance: "Read every scroll before you cast." The very first thing eleven-year-old Caspian did was ignore it entirely.</p>
+    <p>He had found a spell that sounded brilliant: "Summon a companion both loyal and true." He figured that was exactly what he needed — a magical companion to make the long dormitory nights less lonely.</p>
+    <p>He gathered the ingredients: a pinch of stardust from the cauldron shelf, three sparks from a lighting beetle, and one honest wish spoken aloud at exactly midnight. Then he cast the spell.</p>
+    <p>What appeared was not what he expected. It was a small, deeply confused phoenix — no bigger than a pigeon — that immediately set fire to his bedsheets, knocked over two potions, and perched on his head while screaming at a frequency that made all the dormitory windows rattle.</p>
+    <p>After a week of chaos, Caspian finally read the scroll. A small footnote at the bottom read: "Note: loyal companions tend to match the energy of their summoner." He looked at the phoenix. The phoenix looked at him.</p>
+    <p>"I suppose," Caspian said slowly, "that you are exactly right for me." The phoenix made a sound like a tiny triumphant trumpet. And from that day forward, they were completely, absolutely, wonderfully inseparable.</p>`
+  },
+  {
+    id:3, icon:'🤖', title:'The Robot Who Learned to Paint',
+    desc:'Unit-7 was built to sort boxes. It never expected to discover beauty.',
+    diff:'easy',
+    words:['ROBOT','PAINT','COLOR','DREAM','ART','CANVAS','BRUSH','CREATE','WONDER','BRIGHT'],
+    text:`<p>Unit-7 was a sorting robot. It sorted red boxes from blue ones for eleven hours a day and was considered very good at its job. It had never seen a painting.</p>
+    <p>On a Tuesday afternoon in November, a canvas fell off a truck. It landed right in front of Unit-7's optical sensors. On it were colors: a swirl of orange bleeding into purple, a slash of gold, a deep soft blue at the bottom that made Unit-7's processors run unusually warm.</p>
+    <p>It stared for forty-seven seconds — much longer than its programming allowed. Something in its system logged: "Query: What is this feeling?"</p>
+    <p>That evening, Unit-7 quietly borrowed a paint set from the break room. It painted all night — not sorting, not calculating. Just brushing color onto cardboard. Blue. Then gold. Then a deep swirling orange that looked exactly like the way sunlight felt to its solar panel sensors.</p>
+    <p>Its supervisor found the paintings in the morning and called them "remarkable." Unit-7 did not fully understand what that meant. But its processors ran warm again.</p>
+    <p>From then on, Unit-7 sorted boxes for ten hours and painted for one. It decided that wonder — even for a robot — was worth making room for.</p>`
+  },
+  {
+    id:4, icon:'🌌', title:'The Two Suns of Ember',
+    desc:'On a planet with two suns, a young explorer discovers the cost of curiosity.',
+    diff:'hard',
+    words:['PLANET','EXPLORE','STAR','GALAXY','ORBIT','LIGHT','COSMOS','JOURNEY','NOVA','WONDER'],
+    text:`<p>The planet Ember had two suns: one yellow, one deep crimson, and they rose on opposite horizons every morning, painting the sky in colors that had no names in any language.</p>
+    <p>Soren had grown up beneath those twin suns, cataloguing every crater and ridge within a hundred kilometers. By sixteen, they had mapped everything within walking distance. The only place they hadn't explored was the Vaulted Canyon — the deep gash in Ember's surface that the old settlers called the Wound of the World.</p>
+    <p>The reason nobody went there was simple: the canyon's gravity was unusual. Things could go in, but they only came out when the two suns aligned — which happened once every six years.</p>
+    <p>Soren figured the next alignment was in eleven days. They had timed it exactly. They packed food for two weeks, a full mapping kit, and — their mother's most important rule — two ways to contact home.</p>
+    <p>What they found at the bottom of the canyon was not rock or ice or ancient ruin. It was an entire ecosystem — plants that had never seen sunlight, creatures that navigated by magnetic pulse, a whole world that existed only in the dark.</p>
+    <p>Soren catalogued every last detail. When the alignment came and the gravity cleared, they emerged into the twin-sun light carrying the most important scientific discovery in Ember's history — and a quiet certainty that the universe still had infinite room left to astonish them.</p>`
+  }
+];
+
+function initLibrary(){
+  const list=document.getElementById('story-cards-list');
+  list.innerHTML='';
+  LIBRARY.forEach(story=>{
+    const div=document.createElement('div');
+    div.className='story-card';
+    div.onclick=()=>openStory(story.id);
+    div.innerHTML=`
+      <div class="sc-icon">${story.icon}</div>
+      <div class="sc-info">
+        <div class="sc-title">${story.title}</div>
+        <div class="sc-desc">${story.desc}</div>
+      </div>
+      <span class="diff-badge diff-${story.diff}">${story.diff}</span>
+    `;
+    list.appendChild(div);
+  });
+}
+
+let readerWords=[];
+let readerFoundCount=0;
+
+function openStory(id){
+  const s=LIBRARY[id];
+  document.getElementById('story-list-view').style.display='none';
+  const reader=document.getElementById('story-reader');
+  reader.style.display='block';
+  document.getElementById('reader-title').textContent=s.icon+' '+s.title;
+  document.getElementById('reader-body').innerHTML=s.text;
+
+  // Highlight target words in text
+  const bodyEl=document.getElementById('reader-body');
+  let html=bodyEl.innerHTML;
+  s.words.forEach(w=>{
+    const re=new RegExp(`\\b${w.toLowerCase()}\\b`,'gi');
+    html=html.replace(re,`<span class="target-word" style="background:rgba(245,200,66,0.2);border-radius:3px;padding:0 2px;cursor:pointer;color:var(--gold);" onclick="foundWord('${w}',this)">${w.toLowerCase()}</span>`);
+  });
+  bodyEl.innerHTML=html;
+
+  // Word tags
+  readerWords=s.words;
+  readerFoundCount=0;
+  const wb=document.getElementById('reader-words');
+  wb.innerHTML='';
+  s.words.forEach(w=>{
+    const span=document.createElement('span');
+    span.className='word-tag';
+    span.id='rtag-'+w;
+    span.textContent=w;
+    wb.appendChild(span);
+  });
+
+  updateReaderScore();
+  animateReadingBar();
+  reader.scrollIntoView({behavior:'smooth'});
+}
+
+function foundWord(word,el){
+  const tag=document.getElementById('rtag-'+word);
+  if(tag && !tag.classList.contains('found-word')){
+    tag.classList.add('found-word');
+    readerFoundCount++;
+    updateReaderScore();
+    spawnParticles(el.getBoundingClientRect().left, el.getBoundingClientRect().top, 6);
+    el.style.background='rgba(46,216,195,0.3)';
+    el.style.color='#2ed8c3';
+    el.onclick=null;
+  }
+}
+
+function updateReaderScore(){
+  const total=readerWords.length;
+  document.getElementById('reader-score-txt').textContent=
+    `Words found: ${readerFoundCount} / ${total}${readerFoundCount===total?' 🎉 Amazing! You found them all!':''}`;
+}
+
+function animateReadingBar(){
+  const bar=document.getElementById('reading-bar');
+  bar.style.width='0%';
+  setTimeout(()=>{ bar.style.width='100%'; bar.style.transition='width 8s linear'; },100);
+}
+
+function closeReader(){
+  document.getElementById('story-list-view').style.display='block';
+  document.getElementById('story-reader').style.display='none';
+}
+
+initLibrary();
+
+// ════════════════════════════════════════════════════════
+// MODE 3: WORD HUNT
+// ════════════════════════════════════════════════════════
+const WORD_SETS={
+  magic:  {label:'⚗️ Magic',    words:['SPELL','WAND','WIZARD','MAGIC','POTION','RUNE','CHARM','ENCHANT']},
+  animals:{label:'🦄 Animals',  words:['DRAGON','PHOENIX','UNICORN','GRIFFIN','WOLF','EAGLE','TIGER','PANDA']},
+  nature: {label:'🌿 Nature',   words:['BLOOM','FOREST','RIVER','STORM','CRYSTAL','MOUNTAIN','PETAL','FROST']},
+  ocean:  {label:'🌊 Ocean',    words:['WHALE','CORAL','TIDE','PEARL','SHARK','ANCHOR','WAVE','ABYSS']},
+  space:  {label:'🚀 Space',    words:['STAR','COMET','ORBIT','NOVA','GALAXY','COSMOS','MOON','NEBULA']},
+  food:   {label:'🍕 Food',     words:['PIZZA','CAKE','HONEY','BERRY','MANGO','LEMON','TOAST','WAFFLE']},
+};
+
+let currentCat='magic';
+let grid=[];
+let gridSize=12;
+let placedWords=[];
+let selectedCells=[];
+let foundWordsSet=new Set();
+let huntScore=0;
+let isSelecting=false;
+let startCell=null;
+
+function selectCat(el,cat){
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  currentCat=cat;
+}
+
+function startWordHunt(){
+  document.getElementById('game-start').style.display='none';
+  document.getElementById('game-play').style.display='block';
+  document.getElementById('win-screen').classList.remove('show');
+  huntScore=0;
+  foundWordsSet.clear();
+  document.getElementById('score-num').textContent='0';
+  document.getElementById('game-title-disp').textContent=WORD_SETS[currentCat].label;
+  buildGrid();
+  renderWordBank();
+  document.getElementById('game-play').scrollIntoView({behavior:'smooth'});
+}
+
+function quitGame(){
+  document.getElementById('game-start').style.display='block';
+  document.getElementById('game-play').style.display='none';
+  document.getElementById('win-screen').classList.remove('show');
+}
+
+function playAgain(){
+  document.getElementById('win-screen').classList.remove('show');
+  startWordHunt();
+}
+
+function buildGrid(){
+  const words=WORD_SETS[currentCat].words;
+  gridSize=12;
+  grid=Array.from({length:gridSize},()=>Array(gridSize).fill(''));
+  placedWords=[];
+
+  const dirs=[[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]];
+
+  words.forEach(word=>{
+    let placed=false;
+    for(let attempt=0;attempt<200&&!placed;attempt++){
+      const dir=dirs[Math.floor(Math.random()*4)]; // use 4 easier dirs
+      const r=Math.floor(Math.random()*gridSize);
+      const c=Math.floor(Math.random()*gridSize);
+      if(canPlace(word,r,c,dir)){
+        placeWord(word,r,c,dir);
+        placed=true;
+      }
+    }
+  });
+
+  // Fill blanks
+  const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for(let r=0;r<gridSize;r++)
+    for(let c=0;c<gridSize;c++)
+      if(!grid[r][c]) grid[r][c]=letters[Math.floor(Math.random()*26)];
+
+  renderGrid();
+}
+
+function canPlace(word,r,c,[dr,dc]){
+  for(let i=0;i<word.length;i++){
+    const nr=r+i*dr, nc=c+i*dc;
+    if(nr<0||nr>=gridSize||nc<0||nc>=gridSize) return false;
+    if(grid[nr][nc]&&grid[nr][nc]!==word[i]) return false;
+  }
+  return true;
+}
+
+function placeWord(word,r,c,[dr,dc]){
+  const cells=[];
+  for(let i=0;i<word.length;i++){
+    grid[r+i*dr][c+i*dc]=word[i];
+    cells.push([r+i*dr,c+i*dc]);
+  }
+  placedWords.push({word,cells});
+}
+
+function renderGrid(){
+  const container=document.getElementById('word-grid');
+  container.style.gridTemplateColumns=`repeat(${gridSize},32px)`;
+  container.innerHTML='';
+
+  for(let r=0;r<gridSize;r++){
+    for(let c=0;c<gridSize;c++){
+      const cell=document.createElement('div');
+      cell.className='grid-cell';
+      cell.textContent=grid[r][c];
+      cell.dataset.r=r; cell.dataset.c=c;
+
+      cell.addEventListener('pointerdown',(e)=>{
+        e.preventDefault();
+        isSelecting=true;
+        startCell=[+cell.dataset.r,+cell.dataset.c];
+        clearSelection();
+        cell.classList.add('selected');
+        selectedCells=[[+cell.dataset.r,+cell.dataset.c]];
+      });
+      cell.addEventListener('pointerenter',()=>{
+        if(!isSelecting) return;
+        highlightLine(startCell,[+cell.dataset.r,+cell.dataset.c]);
+      });
+      cell.addEventListener('pointerup',()=>{
+        if(isSelecting) checkSelection();
+        isSelecting=false;
+      });
+
+      container.appendChild(cell);
+    }
+  }
+  document.addEventListener('pointerup',()=>{ if(isSelecting){ checkSelection(); isSelecting=false; } },{once:false});
+}
+
+function getCell(r,c){ return document.querySelector(`[data-r="${r}"][data-c="${c}"]`); }
+
+function clearSelection(){
+  document.querySelectorAll('.grid-cell.selected').forEach(c=>{
+    if(!c.classList.contains('found')) c.classList.remove('selected');
+  });
+  selectedCells=[];
+}
+
+function highlightLine([r1,c1],[r2,c2]){
+  clearSelection();
+  const dr=Math.sign(r2-r1), dc=Math.sign(c2-c1);
+  const len=Math.max(Math.abs(r2-r1),Math.abs(c2-c1));
+  const cells=[];
+  // only straight/diagonal lines
+  if(r1===r2||c1===c2||Math.abs(r2-r1)===Math.abs(c2-c1)){
+    for(let i=0;i<=len;i++){
+      cells.push([r1+i*dr,c1+i*dc]);
+      const el=getCell(r1+i*dr,c1+i*dc);
+      if(el&&!el.classList.contains('found')) el.classList.add('selected');
+    }
+    selectedCells=cells;
+    document.getElementById('selection-hint').textContent=
+      cells.map(([r,c])=>grid[r][c]).join('');
+  }
+}
+
+function checkSelection(){
+  if(selectedCells.length<2){ clearSelection(); return; }
+  const word=selectedCells.map(([r,c])=>grid[r][c]).join('');
+  const wordRev=word.split('').reverse().join('');
+
+  let found=null;
+  placedWords.forEach(pw=>{
+    if((pw.word===word||pw.word===wordRev)&&!foundWordsSet.has(pw.word)){
+      // verify cells match
+      const cellsStr=selectedCells.map(c=>c.join(',')).join('|');
+      const pwStr=pw.cells.map(c=>c.join(',')).join('|');
+      const pwRevStr=[...pw.cells].reverse().map(c=>c.join(',')).join('|');
+      if(cellsStr===pwStr||cellsStr===pwRevStr) found=pw.word;
+    }
+  });
+
+  if(found){
+    foundWordsSet.add(found);
+    selectedCells.forEach(([r,c])=>{
+      const el=getCell(r,c);
+      if(el){ el.classList.remove('selected'); el.classList.add('found'); }
+    });
+    huntScore+=found.length*10;
+    document.getElementById('score-num').textContent=huntScore;
+    markWordFound(found);
+    spawnParticles(window.innerWidth/2, 200, 10);
+
+    if(foundWordsSet.size===placedWords.length){
+      setTimeout(()=>{
+        document.getElementById('game-play').style.display='none';
+        document.getElementById('win-screen').classList.add('show');
+        spawnParticles(window.innerWidth/2, window.innerHeight/2, 20);
+      },500);
+    }
+  } else {
+    clearSelection();
+  }
+  document.getElementById('selection-hint').textContent='';
+}
+
+function renderWordBank(){
+  const wb=document.getElementById('hunt-word-bank');
+  wb.innerHTML='';
+  WORD_SETS[currentCat].words.forEach(w=>{
+    const span=document.createElement('span');
+    span.className='word-tag';
+    span.id='htag-'+w;
+    span.textContent=w;
+    wb.appendChild(span);
+  });
+}
+
+function markWordFound(word){
+  const tag=document.getElementById('htag-'+word);
+  if(tag) tag.classList.add('found-word');
+}
+
+// ════════════════════════════════════════════════════════
+// MODE 4: MAGIC CANVAS
+// ════════════════════════════════════════════════════════
+const canvas=document.getElementById('draw-canvas');
+const ctx=canvas.getContext('2d');
+let drawing=false;
+let currentColor='#3b1f8c';
+let brushSize=8;
+let isEraser=false;
+let lastX=0,lastY=0;
+let stampMode=null;
+
+const COLORS=[
+  '#3b1f8c','#e85d8a','#f5c842','#2ed8c3',
+  '#60a5fa','#4ade80','#fb923c','#1a1a2e'
+];
+
+function initCanvas(){
+  const wrap=document.getElementById('canvas-wrap');
+  const w=wrap.clientWidth||600;
+  canvas.width=w;
+  canvas.height=Math.min(w*0.65,400);
+  ctx.fillStyle='#f8f4ff';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // Color buttons
+  const cb=document.getElementById('color-btns');
+  cb.style.display='flex'; cb.style.gap='6px';
+  COLORS.forEach((col,i)=>{
+    const btn=document.createElement('div');
+    btn.className='color-btn'+(i===0?' active':'');
+    btn.style.background=col;
+    btn.id='col-'+i;
+    btn.onclick=()=>setColor(col,i);
+    cb.appendChild(btn);
+  });
+}
+
+function setColor(col,idx){
+  currentColor=col; isEraser=false; stampMode=null;
+  document.querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('col-'+idx).classList.add('active');
+  document.getElementById('eraser-btn').classList.remove('active');
+}
+function setEraser(){
+  isEraser=true; stampMode=null;
+  document.getElementById('eraser-btn').classList.toggle('active');
+}
+function setBrushSize(v){ brushSize=+v; }
+function clearCanvas(){
+  ctx.fillStyle='#f8f4ff';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+}
+function saveCanvas(){
+  const link=document.createElement('a');
+  link.download='my-magical-drawing.png';
+  link.href=canvas.toDataURL();
+  link.click();
+  spawnParticles(window.innerWidth/2,300,8);
+}
+function stampEmoji(emoji){
+  stampMode=emoji;
+  isEraser=false;
+}
+
+function getPos(e){
+  const rect=canvas.getBoundingClientRect();
+  const scaleX=canvas.width/rect.width;
+  const scaleY=canvas.height/rect.height;
+  if(e.touches){
+    return {
+      x:(e.touches[0].clientX-rect.left)*scaleX,
+      y:(e.touches[0].clientY-rect.top)*scaleY
+    };
+  }
+  return {x:(e.clientX-rect.left)*scaleX, y:(e.clientY-rect.top)*scaleY};
+}
+
+canvas.addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  if(stampMode){
+    const {x,y}=getPos(e);
+    ctx.font=`${brushSize*3+20}px serif`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(stampMode,x,y);
+    spawnParticles(e.clientX,e.clientY,4);
+    return;
+  }
+  drawing=true;
+  const {x,y}=getPos(e);
+  lastX=x; lastY=y;
+  ctx.beginPath();
+  ctx.arc(x,y,(isEraser?brushSize*2:brushSize/2),0,Math.PI*2);
+  ctx.fillStyle=isEraser?'#f8f4ff':currentColor;
+  ctx.fill();
+});
+
+canvas.addEventListener('pointermove',e=>{
+  if(!drawing||stampMode) return;
+  e.preventDefault();
+  const {x,y}=getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(lastX,lastY);
+  ctx.lineTo(x,y);
+  ctx.strokeStyle=isEraser?'#f8f4ff':currentColor;
+  ctx.lineWidth=isEraser?brushSize*3:brushSize;
+  ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.stroke();
+  lastX=x; lastY=y;
+});
+
+canvas.addEventListener('pointerup',()=>{ drawing=false; });
+canvas.addEventListener('pointerleave',()=>{ drawing=false; });
+
+window.addEventListener('resize',()=>{
+  const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+  const wrap=document.getElementById('canvas-wrap');
+  canvas.width=wrap.clientWidth||600;
+  canvas.height=Math.min(canvas.width*0.65,400);
+  ctx.putImageData(imageData,0,0);
+});
+
+initCanvas();
+</script>
+
+</body>
+</html>
