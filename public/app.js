@@ -667,28 +667,39 @@ function renderGrid(){
       cell.dataset.r=r; cell.dataset.c=c;
       cell.style.width=cellSize+'px'; cell.style.height=cellSize+'px';
       if(cellSize<32) cell.style.fontSize='0.72rem';
-
       cell.addEventListener('pointerdown',(e)=>{
         e.preventDefault();
+        container.setPointerCapture(e.pointerId);
         isSelecting=true;
         startCell=[+cell.dataset.r,+cell.dataset.c];
         clearSelection();
         cell.classList.add('selected');
         selectedCells=[[+cell.dataset.r,+cell.dataset.c]];
       });
-      cell.addEventListener('pointerenter',()=>{
-        if(!isSelecting) return;
-        highlightLine(startCell,[+cell.dataset.r,+cell.dataset.c]);
-      });
-      cell.addEventListener('pointerup',()=>{
-        if(isSelecting) checkSelection();
-        isSelecting=false;
-      });
-
       container.appendChild(cell);
     }
   }
-  document.addEventListener('pointerup',()=>{ if(isSelecting){ checkSelection(); isSelecting=false; } },{once:false});
+
+  // pointermove on the container works for both mouse and touch drag
+  container.addEventListener('pointermove',(e)=>{
+    if(!isSelecting) return;
+    e.preventDefault();
+    const el=document.elementFromPoint(e.clientX,e.clientY);
+    if(el&&el.classList.contains('grid-cell')){
+      highlightLine(startCell,[+el.dataset.r,+el.dataset.c]);
+    }
+  });
+
+  container.addEventListener('pointerup',(e)=>{
+    if(isSelecting) checkSelection();
+    isSelecting=false;
+    try{ container.releasePointerCapture(e.pointerId); }catch(_){}
+  });
+
+  container.addEventListener('pointercancel',()=>{
+    isSelecting=false;
+    clearSelection();
+  });
 }
 
 function getCell(r,c){ return document.querySelector(`[data-r="${r}"][data-c="${c}"]`); }
@@ -764,12 +775,12 @@ function checkSelection(){
 function renderWordBank(){
   const wb=document.getElementById('hunt-word-bank');
   wb.innerHTML='';
-  const count={easy:5,medium:8,hard:10}[currentDiff];
-  WORD_SETS[currentCat].words.slice(0,count).forEach(w=>{
+  // Only show words that were actually placed in the grid
+  placedWords.forEach(({word})=>{
     const span=document.createElement('span');
     span.className='word-tag';
-    span.id='htag-'+w;
-    span.textContent=w;
+    span.id='htag-'+word;
+    span.textContent=word;
     wb.appendChild(span);
   });
 }

@@ -381,6 +381,8 @@ margin: 1rem 0;
 display: grid;
 gap: 3px;
 margin: 0 auto;
+touch-action: none;
+user-select: none;
 }
 .grid-cell {
 width: 32px; height: 32px;
