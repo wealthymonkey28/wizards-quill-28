@@ -486,6 +486,58 @@ header { padding: 1.5rem 1rem 1rem; }
 .glass { padding: 1.3rem; }
 .grid-cell { width:27px; height:27px; font-size:0.72rem; }
 }
+
+/* ── LIGHT MODE ─────────────────────────────────────────── */
+body.light-mode {
+  background: #fdf6e3;
+  color: #1a1a3e;
+}
+body.light-mode #stars { opacity: 0.12; }
+body.light-mode .glass {
+  background: linear-gradient(135deg, rgba(255,248,225,0.97), rgba(255,238,195,0.92));
+  border-color: rgba(180,130,20,0.25);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+}
+body.light-mode .glass:hover { border-color: rgba(180,130,20,0.4); }
+body.light-mode .subtitle,
+body.light-mode .section-sub { color: #6a5a85; }
+body.light-mode input[type=text],
+body.light-mode textarea,
+body.light-mode select {
+  background: rgba(0,0,0,0.04);
+  color: #1a1a3e;
+  border-color: rgba(139,100,20,0.3);
+}
+body.light-mode select option { background: #fdf6e3; color: #1a1a3e; }
+body.light-mode .story-text,
+body.light-mode .reader-text { color: #2a1a4e; }
+body.light-mode .nav-btn {
+  color: #6a5a85;
+  border-color: rgba(100,80,160,0.2);
+  background: rgba(100,80,160,0.04);
+}
+body.light-mode .nav-btn:hover { color: var(--gold2); border-color: var(--gold2); background: rgba(245,200,66,0.08); }
+body.light-mode .nav-btn.active { color: var(--gold2); border-color: var(--gold2); background: rgba(245,200,66,0.12); }
+body.light-mode .theme-card { background: rgba(255,255,255,0.65); border-color: rgba(139,100,20,0.18); }
+body.light-mode .theme-card:hover { background: rgba(245,200,66,0.15); }
+body.light-mode .theme-card.selected { background: rgba(245,200,66,0.2); }
+body.light-mode .story-card { background: rgba(255,255,255,0.55); border-color: rgba(139,100,20,0.12); }
+body.light-mode .story-card:hover { background: rgba(245,200,66,0.1); }
+body.light-mode .grid-cell { background: rgba(255,255,255,0.75); color: #3a2a5e; border-color: rgba(139,100,20,0.15); }
+body.light-mode .grid-cell:hover { background: rgba(245,200,66,0.15); color: #1a1a3e; }
+body.light-mode .grid-cell.selected { background: rgba(245,200,66,0.3); border-color: var(--gold2); color: #1a1a3e; }
+body.light-mode .score-display { background: rgba(0,0,0,0.04); }
+body.light-mode .reading-progress { background: rgba(0,0,0,0.1); }
+body.light-mode .btn-ghost { background: rgba(0,0,0,0.06); color: #3a2a5e; border-color: rgba(0,0,0,0.1); }
+body.light-mode .btn-ghost:hover { background: rgba(0,0,0,0.1); color: #1a1a3e; }
+body.light-mode .keyword-chip { background: rgba(180,160,220,0.3); border-color: rgba(150,120,200,0.4); color: #5a3a8e; }
+body.light-mode .keyword-chip.active { background: rgba(150,120,200,0.5); color: #2a1a5e; }
+body.light-mode .word-tag { background: rgba(180,160,220,0.3); border-color: rgba(150,120,200,0.4); color: #5a3a8e; }
+body.light-mode .cat-btn { background: rgba(255,255,255,0.5); color: #5a3a8e; border-color: rgba(139,100,20,0.15); }
+body.light-mode .cat-btn:hover,
+body.light-mode .cat-btn.selected { background: rgba(245,200,66,0.15); color: var(--gold2); }
+body.light-mode .sc-info .sc-title { color: #1a1a3e; }
+body.light-mode .reader-title { color: var(--gold2); }
 </style>
 
 </head>
@@ -508,6 +560,7 @@ header { padding: 1.5rem 1rem 1rem; }
     <button class="nav-btn" onclick="showPanel('library')" id="nav-library">📚 Story Library</button>
     <button class="nav-btn" onclick="showPanel('hunt')" id="nav-hunt">🔍 Word Hunt</button>
     <button class="nav-btn" onclick="showPanel('draw')" id="nav-draw">🎨 Magic Canvas</button>
+    <button class="nav-btn" onclick="toggleTheme()" id="theme-toggle">☀️ Light</button>
   </nav>
 
   <main>
@@ -1411,6 +1464,18 @@ window.addEventListener('resize',()=>{
 });
 
 initCanvas();
+
+// ── THEME TOGGLE ─────────────────────────────────────────
+function toggleTheme() {
+  const light = document.body.classList.toggle('light-mode');
+  document.getElementById('theme-toggle').textContent = light ? '🌙 Dark' : '☀️ Light';
+  localStorage.setItem('wq-theme', light ? 'light' : 'dark');
+}
+
+if (localStorage.getItem('wq-theme') === 'light') {
+  document.body.classList.add('light-mode');
+  document.getElementById('theme-toggle').textContent = '🌙 Dark';
+}
 </script>
 
 </body>
