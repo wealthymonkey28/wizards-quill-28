@@ -1007,10 +1007,28 @@ initCanvas();
 function toggleTheme() {
   const light = document.body.classList.toggle('light-mode');
   document.getElementById('theme-toggle').textContent = light ? '🌙 Dark' : '☀️ Light';
-  localStorage.setItem('wq-theme', light ? 'light' : 'dark');
+  const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+  // Only persist if it differs from the OS default; otherwise let OS preference lead
+  if ((light && !prefersLight) || (!light && prefersLight)) {
+    localStorage.setItem('wq-theme', light ? 'light' : 'dark');
+  } else {
+    localStorage.removeItem('wq-theme');
+  }
 }
 
-if (localStorage.getItem('wq-theme') === 'light') {
-  document.body.classList.add('light-mode');
-  document.getElementById('theme-toggle').textContent = '🌙 Dark';
-}
+(function () {
+  const saved = localStorage.getItem('wq-theme');
+  const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+  if (saved === 'light' || (!saved && prefersLight)) {
+    document.body.classList.add('light-mode');
+    document.getElementById('theme-toggle').textContent = '🌙 Dark';
+  }
+})();
+
+// Keep dark/light in sync if the OS preference changes and no manual override is set
+window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function (e) {
+  if (localStorage.getItem('wq-theme')) return; // user has a manual preference
+  const light = e.matches;
+  document.body.classList.toggle('light-mode', light);
+  document.getElementById('theme-toggle').textContent = light ? '🌙 Dark' : '☀️ Light';
+});
