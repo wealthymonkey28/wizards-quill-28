@@ -215,11 +215,17 @@ async function forgeStory(){
       storyText.split('\n').filter(p=>p.trim()).map(p=>`<p>${escapeHtml(p)}</p>`).join('');
     result.style.display='block';
     spawnParticles(window.innerWidth/2, 200, 12);
-  } catch(err) {
+  } catch(_) {
+    // API unavailable — fall back to template-based story
+    const kw1=kws[0]||'forest', kw2=kws[1]||'crystal', kw3=kws[2]||'moonlight';
+    const fill=s=>s.replace(/{hero}/g,hero).replace(/{kw1}/g,kw1).replace(/{kw2}/g,kw2).replace(/{kw3}/g,kw3);
+    const paragraphs=[pickRand(theme.openings),pickRand(theme.middles),pickRand(theme.endings)].map(fill);
     generating.style.display='none';
     document.getElementById('story-title-out').textContent=title;
-    document.getElementById('story-text-out').innerHTML=`<p>The magic faded... (${escapeHtml(err.message)})</p>`;
+    document.getElementById('story-text-out').innerHTML=
+      paragraphs.map(p=>`<p>${escapeHtml(p)}</p>`).join('');
     result.style.display='block';
+    spawnParticles(window.innerWidth/2, 200, 12);
   }
 }
 
@@ -469,7 +475,7 @@ function openSavedStory(idx){
     s.text.split('\n').filter(p=>p.trim()).map(p=>`<p>${escapeHtml(p)}</p>`).join('');
   document.getElementById('reader-words').innerHTML='';
   document.getElementById('reader-score-txt').textContent='Your very own forged story ✨';
-  document.getElementById('reading-bar').style.width='0%';
+  startReadingProgress();
   reader.scrollIntoView({behavior:'smooth'});
 }
 
@@ -507,7 +513,7 @@ function openStory(idx){
   });
 
   updateReaderScore();
-  animateReadingBar();
+  startReadingProgress();
   reader.scrollIntoView({behavior:'smooth'});
 }
 
@@ -530,13 +536,34 @@ function updateReaderScore(){
     `Words found: ${readerFoundCount} / ${total}${readerFoundCount===total?' 🎉 Amazing! You found them all!':''}`;
 }
 
-function animateReadingBar(){
+let _readerScrollFn=null;
+
+function startReadingProgress(){
   const bar=document.getElementById('reading-bar');
+  bar.style.transition='width 0.3s ease';
   bar.style.width='0%';
-  setTimeout(()=>{ bar.style.width='100%'; bar.style.transition='width 8s linear'; },100);
+  stopReadingProgress();
+  _readerScrollFn=()=>{
+    const body=document.getElementById('reader-body');
+    if(!body) return;
+    const rect=body.getBoundingClientRect();
+    const bodyTop=rect.top+window.scrollY;
+    const pct=Math.min(1,Math.max(0,(window.scrollY+window.innerHeight-bodyTop)/rect.height));
+    bar.style.width=(pct*100)+'%';
+  };
+  window.addEventListener('scroll',_readerScrollFn,{passive:true});
+  _readerScrollFn();
+}
+
+function stopReadingProgress(){
+  if(_readerScrollFn){
+    window.removeEventListener('scroll',_readerScrollFn);
+    _readerScrollFn=null;
+  }
 }
 
 function closeReader(){
+  stopReadingProgress();
   document.getElementById('story-list-view').style.display='block';
   document.getElementById('story-reader').style.display='none';
 }
@@ -564,6 +591,8 @@ let selectedCells=[];
 let foundWordsSet=new Set();
 let huntScore=0;
 let isSelecting=false;
+let huntTimerInterval=null;
+let huntTimeLeft=0;
 let startCell=null;
 
 function selectCat(el,cat){
@@ -588,18 +617,58 @@ function startWordHunt(){
   document.getElementById('game-title-disp').textContent=WORD_SETS[currentCat].label;
   buildGrid();
   renderWordBank();
+  startTimer();
   document.getElementById('game-play').scrollIntoView({behavior:'smooth'});
 }
 
 function quitGame(){
+  stopTimer();
+  // Reset win screen text for next game
+  const win=document.getElementById('win-screen');
+  win.querySelector('.win-stars').textContent='⭐⭐⭐';
+  win.querySelector('.win-title').textContent='Quest Complete!';
+  win.querySelector('p').textContent='You found all the hidden words!';
   document.getElementById('game-start').style.display='block';
   document.getElementById('game-play').style.display='none';
-  document.getElementById('win-screen').classList.remove('show');
+  win.classList.remove('show');
 }
 
 function playAgain(){
   document.getElementById('win-screen').classList.remove('show');
   startWordHunt();
+}
+
+const TIMER_SECONDS={easy:180,medium:120,hard:90};
+
+function startTimer(){
+  stopTimer();
+  huntTimeLeft=TIMER_SECONDS[currentDiff];
+  const el=document.getElementById('hunt-timer');
+  function tick(){
+    const m=Math.floor(huntTimeLeft/60);
+    const s=huntTimeLeft%60;
+    el.textContent=(m>0?m+':':'')+(s<10&&m>0?'0':'')+s;
+    el.style.color=huntTimeLeft<=20?'#f87171':'var(--gold)';
+    if(huntTimeLeft<=0){ stopTimer(); timeUp(); return; }
+    huntTimeLeft--;
+  }
+  tick();
+  huntTimerInterval=setInterval(tick,1000);
+}
+
+function stopTimer(){
+  if(huntTimerInterval){ clearInterval(huntTimerInterval); huntTimerInterval=null; }
+  const el=document.getElementById('hunt-timer');
+  if(el) el.textContent='';
+}
+
+function timeUp(){
+  document.getElementById('game-play').style.display='none';
+  const win=document.getElementById('win-screen');
+  win.querySelector('.win-stars').textContent='⏰';
+  win.querySelector('.win-title').textContent="Time's Up!";
+  win.querySelector('p').textContent=`You found ${foundWordsSet.size} of ${placedWords.length} words!`;
+  win.classList.add('show');
 }
 
 function buildGrid(){
@@ -616,7 +685,7 @@ function buildGrid(){
   words.forEach(word=>{
     let placed=false;
     for(let attempt=0;attempt<200&&!placed;attempt++){
-      const dir=dirs[Math.floor(Math.random()*4)]; // use 4 easier dirs
+      const dir=dirs[Math.floor(Math.random()*dirs.length)];
       const r=Math.floor(Math.random()*gridSize);
       const c=Math.floor(Math.random()*gridSize);
       if(canPlace(word,r,c,dir)){
@@ -760,9 +829,15 @@ function checkSelection(){
     else{spawnParticles(window.innerWidth/2,200,10);}
 
     if(foundWordsSet.size===placedWords.length){
+      stopTimer();
+      // Restore default win text (in case of prior time-up)
+      const win=document.getElementById('win-screen');
+      win.querySelector('.win-stars').textContent='⭐⭐⭐';
+      win.querySelector('.win-title').textContent='Quest Complete!';
+      win.querySelector('p').textContent='You found all the hidden words!';
       setTimeout(()=>{
         document.getElementById('game-play').style.display='none';
-        document.getElementById('win-screen').classList.add('show');
+        win.classList.add('show');
         spawnParticles(window.innerWidth/2, window.innerHeight/2, 20);
       },500);
     }
@@ -912,11 +987,18 @@ canvas.addEventListener('pointerup',()=>{ drawing=false; });
 canvas.addEventListener('pointerleave',()=>{ drawing=false; });
 
 window.addEventListener('resize',()=>{
-  const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
   const wrap=document.getElementById('canvas-wrap');
-  canvas.width=wrap.clientWidth||600;
-  canvas.height=Math.min(canvas.width*0.65,400);
-  ctx.putImageData(imageData,0,0);
+  const newW=wrap.clientWidth||600;
+  const newH=Math.min(newW*0.65,400);
+  // Snapshot current drawing as an image before resizing
+  const snapshot=canvas.toDataURL();
+  canvas.width=newW;
+  canvas.height=newH;
+  ctx.fillStyle='#f8f4ff';
+  ctx.fillRect(0,0,newW,newH);
+  const img=new Image();
+  img.onload=()=>ctx.drawImage(img,0,0,newW,newH);
+  img.src=snapshot;
 });
 
 initCanvas();
